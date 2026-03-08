@@ -1,6 +1,6 @@
 # Initialized Portfolio News Tracker
 
-A Cloudflare Worker that scrapes the Initialized Capital portfolio, fetches today's news for each company across 30+ sources, filters and summarizes it with GPT-5-mini, and returns structured results with per-company sentiment.
+A Cloudflare Worker that scrapes the Initialized Capital portfolio, fetches today's news for each company across 30+ sources, filters and summarizes it with GPT-5-mini, and returns per-company summaries with sentiment scoring.
 
 **Live URL:** `<!-- ADD YOUR DEPLOYED URL HERE -->`
 
@@ -8,17 +8,19 @@ A Cloudflare Worker that scrapes the Initialized Capital portfolio, fetches toda
 
 ## How It Works
 
-The pipeline runs in 7 steps when `GET /api/fetch-news` is called:
+The pipeline runs in 9 steps when `GET /api/fetch-news` is called:
 
-1. **Fetch** — Pulls articles in parallel from 30+ RSS feeds (TechCrunch, VentureBeat, Forbes, CoinDesk, STAT News, etc.) and NewsAPI, batched by company name
-2. **Date filter** — Keeps only articles published today (PST)
-3. **Dedup** — Skips articles already stored in Supabase from prior runs
-4. **Match** — Scans headlines and descriptions for portfolio company name mentions
-5. **LLM relevance filter** — GPT-5-mini confirms each match is actually about the company (not just a name collision)
-6. **Content fetch** — Grabs full article text via a fallback chain: RSS body → Mozilla Readability → Firecrawl → RSS description
-7. **Summarize** — GPT-5-mini writes a 2–3 sentence VC-voice summary per company with sentiment (`+`, `-`, `mixed`)
+1. **Fetch** — Pulls articles in parallel from RSS feeds (TechCrunch, VentureBeat, Forbes, Crunchbase News, etc.) and NewsAPI, batched by company name
+2. **Date filter** — Keeps only articles published today (PST) *(currently disabled during development)*
+3. **Dedup** — Skips articles whose URLs have already been stored in Supabase from a prior run
+4. **Match** — Scans headlines and descriptions for portfolio company name or website domain mentions using whole-word regex
+5. **LLM relevance filter** — GPT-5-mini confirms each match is genuinely about that company, using the company description to disambiguate
+6. **Mark seen** — Stores processed article URLs in Supabase so they won't be re-processed in future runs
+7. **Content fetch** — Grabs full article text via a fallback chain: RSS body → Mozilla Readability → Firecrawl → RSS description
+8. **Summarize** — GPT-5-mini writes a 2–3 sentence VC-voice summary per company
+9. **Sentiment** — Each summary is tagged with a sentiment signal (`+`, `-`, or `mixed`) and a short reason phrase
 
-Each response also includes a `funnel` object that breaks down how many articles passed each stage, per source.
+Each response includes a breakdown of how many articles passed each stage (`articlesScanned`, `unseenArticles`, `candidatesFound`, `confirmed`).
 
 ---
 
@@ -110,23 +112,33 @@ npx wrangler secret put SUPABASE_ANON_KEY
 ## Decisions & Trade-offs
 
 **Dual news source strategy**
-RSS feeds give real-time, broad coverage across tech/business/crypto/biotech verticals. NewsAPI adds targeted coverage — querying company names directly against trusted domains (Reuters, Bloomberg, WSJ, etc.). Together they reduce blind spots either source would have alone.
+RSS feeds give real-time, broad coverage across tech/business/startup verticals. NewsAPI adds targeted coverage — querying company names directly against a curated list of trusted domains (TechCrunch, VentureBeat, Forbes, Business Insider, Crunchbase, etc.) to reduce noise. Running both in parallel maximises coverage while keeping latency flat.
 
-**Two-stage LLM filtering**
-Articles are first matched by keyword, then confirmed by GPT-5-mini before content is fetched. This avoids wasting Firecrawl credits and summarization tokens on false positives (e.g. "Coinbase" appearing in an unrelated crypto article).
+**Whole-word regex matching + domain matching**
+Company names are matched using word-boundary regex (`\bCompanyName\b`) so partial matches (e.g. "Front" matching "Frontend") are excluded. On top of that, each company's website domain is also checked against the article text, which catches articles that link to the company but don't spell out its name in full. Both checks are case-insensitive.
+
+**LLM disambiguation via company descriptions**
+An early version used a manual `lowConfidence` blocklist for ambiguous names. We dropped that in favour of passing the company's actual description to the LLM relevance filter — letting the model do the disambiguation rather than maintaining a brittle blocklist. This scales better as the portfolio grows.
+
+**Two-stage LLM pipeline**
+Articles are first matched by keyword (cheap), then confirmed by GPT-5-mini (more expensive) before any content is fetched. This avoids wasting Firecrawl credits and summarization tokens on false positives. The filter and summarizer are separate calls so each prompt stays focused.
 
 **Content fetch fallback chain**
-Full article text improves summary quality significantly. The chain (RSS body → Readability → Firecrawl → description) tries free/local methods first and only calls Firecrawl when needed, keeping API costs low.
+Full article text produces meaningfully better summaries than titles + descriptions alone. The fallback chain (RSS body → Mozilla Readability → Firecrawl → RSS description) tries free/local methods first and only calls Firecrawl when needed, keeping API costs proportional to actual need.
 
-**Deduplication via Supabase**
-Article URLs are stored after each run so re-fetching the same feeds doesn't re-process or re-summarize the same news. This makes the endpoint safe to call multiple times per day.
+**Deduplication via Supabase RPC**
+Article URLs are stored after each run so the pipeline is safe to call multiple times per day without re-processing or re-summarising the same news. URLs with special characters (query strings, fragments) caused issues with PostgREST's filter syntax, so dedup queries go through a Supabase RPC function that accepts a JSON array of URLs instead.
 
 **Portfolio data is static**
-`/api/scrape-companies` pulls the portfolio once and stores it. The Initialized website data is stable enough that re-running it daily isn't necessary — but the endpoint exists to refresh it manually when needed.
+`/api/scrape-companies` pulls the portfolio once. The Initialized website is stable enough that re-running daily isn't necessary — but the endpoint exists to refresh manually when needed.
 
-**What I'd improve with more time**
-- Add a scheduled Cron Trigger to auto-run the pipeline daily instead of requiring a manual API call
-- Build a proper frontend UI instead of returning raw JSON
-- Add a `service_role` key for server-side Supabase writes instead of the anon key
-- Cache the portfolio list in KV to avoid the DB call on every news run
-# portco-tracker
+---
+
+## What I'd Improve With More Time
+
+- **Cron Trigger** — auto-run the pipeline on a schedule (e.g. every few hours) instead of requiring a manual API call
+- **Frontend** — a proper UI to surface summaries, sentiment, and pipeline stats per run
+- **Twitter / LinkedIn / Newsrooms** — add Apify scrapers for company social pages and newsroom RSS feeds for richer signal
+- **Pipeline run logging** — persist per-run stats and errors to Supabase for an admin dashboard
+- **Supabase service role key** — use a server-side key for writes instead of the anon key
+- **KV cache for portfolio** — avoid hitting Supabase on every news run by caching the company list in Cloudflare KV

@@ -5,6 +5,7 @@ import { summarizeByCompany } from '../utils/summarize.js';
 import { filterUnseenArticles, markArticlesSeen } from '../utils/dedup.js';
 import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
+import { saveDigests } from '../services/save.js';
 
 const RSS_FEEDS = [
 	// Tech News
@@ -19,7 +20,7 @@ const RSS_FEEDS = [
 	{ name: 'MIT Technology Review', url: 'https://www.technologyreview.com/feed/' },
 	{ name: 'Wired AI', url: 'https://www.wired.com/feed/tag/tech/latest/rss' },
 	{ name: 'CNBC Technology', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910' },
-	
+
 	// Products & Ideas
 	{ name: 'Product Hunt', url: 'http://www.producthunt.com/feed' },
 	{ name: 'Hacker News: Show HN', url: 'http://hnrss.org/show' },
@@ -58,181 +59,160 @@ function buildFunnel(allArticles, recentArticles, unseenArticles, candidates, co
 	const bySource = {};
 
 	function get(src) {
-		if (!bySource[src]) bySource[src] = {
-			extracted: 0,
-			dateFiltered: 0,
-			deduped: 0,
-			matched: 0,
-			confirmed: 0,
-			content: { rssContent: 0, readability: 0, firecrawl: 0, rssDescription: 0 },
-		};
+		if (!bySource[src]) bySource[src] = { extracted: 0, dateFiltered: 0, deduped: 0, matched: 0, confirmed: 0, content: { rssContent: 0, readability: 0, firecrawl: 0, rssDescription: 0 } };
 		return bySource[src];
 	}
 
-	// Extracted — everything pulled from feeds
 	for (const a of allArticles) get(a._source).extracted++;
-
-	// Date filtered — in allArticles but didn't make it into recentArticles
-	const recentLinks = new Set(recentArticles.map((a) => a.link));
-	for (const a of allArticles) {
-		if (a.link && !recentLinks.has(a.link)) get(a._source).dateFiltered++;
-	}
-
-	// Deduped — in recentArticles but already seen in DB
-	const unseenLinks = new Set(unseenArticles.map((a) => a.link));
-	for (const a of recentArticles) {
-		if (a.link && !unseenLinks.has(a.link)) get(a._source).deduped++;
-	}
-
-	// Matched — unique articles with ≥1 company name match
-	const matchedLinks = new Set();
-	for (const { article } of candidates) {
-		if (!matchedLinks.has(article.link)) {
-			matchedLinks.add(article.link);
-			get(article._source).matched++;
-		}
-	}
-
-	// Confirmed — unique articles the LLM said were relevant
-	const confirmedLinks = new Set();
-	for (const { article } of confirmed) {
-		if (!confirmedLinks.has(article.link)) {
-			confirmedLinks.add(article.link);
-			get(article._source).confirmed++;
-		}
-	}
-
-	// Content fetch method — tracked via _contentMethod on each article
+	for (const a of recentArticles) get(a._source).dateFiltered++;
+	for (const a of unseenArticles) get(a._source).deduped++;
+	for (const { article } of candidates) get(article._source).matched++;
+	for (const { article } of confirmed) get(article._source).confirmed++;
 	for (const { article } of confirmedWithContent) {
-		if (article._contentMethod) {
-			get(article._source).content[article._contentMethod]++;
-		}
+		const m = article._contentMethod;
+		if (m) get(article._source).content[m]++;
 	}
 
-	// Roll up totals across all sources
-	const totals = Object.values(bySource).reduce(
-		(acc, src) => {
-			acc.extracted += src.extracted;
-			acc.dateFiltered += src.dateFiltered;
-			acc.deduped += src.deduped;
-			acc.matched += src.matched;
-			acc.confirmed += src.confirmed;
-			for (const [k, v] of Object.entries(src.content)) {
-				acc.content[k] = (acc.content[k] || 0) + v;
-			}
+	const totals = {
+		extracted: allArticles.length,
+		dateFiltered: recentArticles.length,
+		deduped: unseenArticles.length,
+		matched: new Set(candidates.map(c => c.article.link)).size,
+		confirmed: new Set(confirmed.map(c => c.article.link)).size,
+		content: confirmedWithContent.reduce((acc, { article }) => {
+			const m = article._contentMethod;
+			if (m) acc[m] = (acc[m] || 0) + 1;
 			return acc;
-		},
-		{ extracted: 0, dateFiltered: 0, deduped: 0, matched: 0, confirmed: 0, content: {} }
-	);
+		}, { rssContent: 0, readability: 0, firecrawl: 0, rssDescription: 0 }),
+	};
 
-	return { bySource, totals };
+	return { totals, bySource };
 }
 
+/**
+ * Core pipeline logic. Fetches, filters, matches, summarises, and saves digests.
+ * Returns { funnel, results } — throws on fatal error.
+ */
+export async function runPipeline(env) {
+	// Step 1: Compute today's date in PST (used for date filter + NewsAPI `from` param)
+	const todayPST = new Date(
+		new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })
+	);
+	const todayISO = todayPST.toISOString().split('T')[0]; // e.g. "2026-03-08"
+
+	// Step 2: Fetch RSS feeds and NewsAPI in parallel
+	const [feedResults, newsApiArticles] = await Promise.all([
+		Promise.allSettled(RSS_FEEDS.map((feed) => extract(feed.url))),
+		fetchFromNewsAPI(env.NEWS_API_KEY, todayISO),
+	]);
+
+	// Tag each RSS article with its source feed name
+	const rssArticles = feedResults.flatMap((result, i) => {
+		if (result.status !== 'fulfilled') return [];
+		return (result.value.entries ?? []).map((entry) => ({
+			...entry,
+			_source: RSS_FEEDS[i].name,
+		}));
+	});
+
+	// Tag NewsAPI articles with their publication name
+	const taggedNewsApiArticles = newsApiArticles.map((a) => ({
+		...a,
+		_source: a.source || 'NewsAPI',
+	}));
+
+	const allArticles = [...rssArticles, ...taggedNewsApiArticles];
+	console.log(`[1] FETCH      RSS: ${rssArticles.length} articles | NewsAPI: ${taggedNewsApiArticles.length} articles | Total: ${allArticles.length}`);
+
+	// Step 3: Filter to articles published today (PST)
+	const recentArticles = allArticles.filter((article) => {
+		if (!article.published) return true; // no date = pass through
+		return new Date(article.published) >= todayPST;
+	});
+
+	console.log(`[2] DATE FILTER ${recentArticles.length} passed (${allArticles.length - recentArticles.length} dropped — not today)`);
+
+	// Step 4: Filter out already-seen articles
+	const unseenArticles = await filterUnseenArticles(recentArticles, env);
+
+	console.log(`[3] DEDUP      ${unseenArticles.length} unseen (${recentArticles.length - unseenArticles.length} already seen — skipped)`);
+
+	// Step 5: Match portfolio company names against unseen articles
+	const candidates = matchCompanies(unseenArticles);
+
+	const uniqueMatchedArticles = new Set(candidates.map((c) => c.article.link)).size;
+	console.log(`[4] MATCH      ${uniqueMatchedArticles} unique articles matched (${candidates.length} total company hits across those articles)`);
+
+	if (candidates.length === 0) {
+		return {
+			funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []).totals,
+			results: [],
+		};
+	}
+
+	// Step 6: LLM relevance filter
+	const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY);
+
+	const uniqueConfirmedArticles = new Set(confirmed.map((c) => c.article.link)).size;
+	console.log(`[5] LLM FILTER ${uniqueConfirmedArticles} confirmed relevant (${candidates.length - confirmed.length} rejected)`);
+
+	// Step 7: Mark all unseen articles as seen (regardless of LLM outcome)
+	await markArticlesSeen(unseenArticles, env);
+
+	if (confirmed.length === 0) {
+		return {
+			funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []).totals,
+			results: [],
+		};
+	}
+
+	// Step 8: Fetch full content — attach _contentMethod to each article for funnel tracking
+	const confirmedWithContent = await Promise.all(
+		confirmed.map(async (candidate) => {
+			const { content, method } = await fetchArticleContent(candidate.article, env.FIRECRAWL_API_KEY);
+			return {
+				...candidate,
+				article: { ...candidate.article, content, _contentMethod: method },
+			};
+		})
+	);
+
+	const methodCounts = confirmedWithContent.reduce((acc, { article }) => {
+		if (article._contentMethod) acc[article._contentMethod] = (acc[article._contentMethod] || 0) + 1;
+		return acc;
+	}, {});
+	console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
+
+	// Step 9: LLM summarize by company
+	const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY);
+
+	console.log(`[7] SUMMARISE  ${results.length} companies summarised`);
+
+	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
+
+	// Step 10: Save digests to DB (upsert — one row per company per day)
+	if (results.length > 0) {
+		await saveDigests(results, todayISO, funnel.totals, env);
+		console.log(`[8] SAVED      ${results.length} digests to init_news_digests`);
+	}
+	console.log(`[DONE]         Funnel totals: ${JSON.stringify(funnel.totals)}`);
+
+	return { funnel: funnel.totals, results };
+}
+
+/**
+ * HTTP handler for /api/fetch-news — wraps runPipeline in a Response.
+ */
 export async function fetchNews(headers, env) {
 	try {
-		// Step 1: Compute today's date in PST (used for date filter + NewsAPI `from` param)
-		const todayPST = new Date(
-			new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })
-		);
-		const todayISO = todayPST.toISOString().split('T')[0]; // e.g. "2026-03-08"
-
-		// Step 2: Fetch RSS feeds and NewsAPI in parallel
-		const [feedResults, newsApiArticles] = await Promise.all([
-			Promise.allSettled(RSS_FEEDS.map((feed) => extract(feed.url))),
-			fetchFromNewsAPI(env.NEWS_API_KEY, todayISO),
-		]);
-
-		// Tag each RSS article with its source feed name
-		const rssArticles = feedResults.flatMap((result, i) => {
-			if (result.status !== 'fulfilled') return [];
-			return (result.value.entries ?? []).map((entry) => ({
-				...entry,
-				_source: RSS_FEEDS[i].name,
-			}));
-		});
-
-		// Tag NewsAPI articles with their publication name
-		const taggedNewsApiArticles = newsApiArticles.map((a) => ({
-			...a,
-			_source: a.source || 'NewsAPI',
-		}));
-
-		const allArticles = [...rssArticles, ...taggedNewsApiArticles];
-		console.log(`[1] FETCH      RSS: ${rssArticles.length} articles | NewsAPI: ${taggedNewsApiArticles.length} articles | Total: ${allArticles.length}`);
-
-		// Step 3: Filter to articles published today (PST)
-		const recentArticles = allArticles.filter((article) => {
-			if (!article.published) return true; // no date = pass through
-			return new Date(article.published) >= todayPST;
-		});
-
-		console.log(`[2] DATE FILTER ${recentArticles.length} passed (${allArticles.length - recentArticles.length} dropped — not today)`);
-
-		// Step 4: Filter out already-seen articles
-		const unseenArticles = await filterUnseenArticles(recentArticles, env);
-
-		console.log(`[3] DEDUP      ${unseenArticles.length} unseen (${recentArticles.length - unseenArticles.length} already seen — skipped)`);
-
-		// Step 5: Match portfolio company names against unseen articles
-		const candidates = matchCompanies(unseenArticles);
-
-		const uniqueMatchedArticles = new Set(candidates.map((c) => c.article.link)).size;
-		console.log(`[4] MATCH      ${uniqueMatchedArticles} unique articles matched (${candidates.length} total company hits across those articles)`);
-
-		if (candidates.length === 0) {
-			return new Response(JSON.stringify({
-				message: 'No company mentions found in today\'s articles.',
-				funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []),
-				results: [],
-			}), { status: 200, headers });
-		}
-
-		// Step 6: LLM relevance filter
-		const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY);
-
-		const uniqueConfirmedArticles = new Set(confirmed.map((c) => c.article.link)).size;
-		console.log(`[5] LLM FILTER ${uniqueConfirmedArticles} confirmed relevant (${candidates.length - confirmed.length} rejected)`);
-
-		// Step 7: Mark all unseen articles as seen (regardless of LLM outcome)
-		await markArticlesSeen(unseenArticles, env);
-
-		if (confirmed.length === 0) {
-			return new Response(JSON.stringify({
-				message: 'No relevant company mentions confirmed by LLM.',
-				funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []),
-				results: [],
-			}), { status: 200, headers });
-		}
-
-		// Step 8: Fetch full content — attach _contentMethod to each article for funnel tracking
-		const confirmedWithContent = await Promise.all(
-			confirmed.map(async (candidate) => {
-				const { content, method } = await fetchArticleContent(candidate.article, env.FIRECRAWL_API_KEY);
-				return {
-					...candidate,
-					article: { ...candidate.article, content, _contentMethod: method },
-				};
-			})
-		);
-
-		const methodCounts = confirmedWithContent.reduce((acc, { article }) => {
-			if (article._contentMethod) acc[article._contentMethod] = (acc[article._contentMethod] || 0) + 1;
-			return acc;
-		}, {});
-		console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
-
-		// Step 9: LLM summarize by company
-		const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY);
-
-		const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
-		console.log(`[7] DONE       ${results.length} companies summarised | Funnel totals: ${JSON.stringify(funnel.totals)}`);
-
+		const { funnel, results } = await runPipeline(env);
 		return new Response(JSON.stringify({
-			message: `Found news for ${results.length} portfolio companies.`,
+			message: results.length > 0
+				? `Found news for ${results.length} portfolio companies.`
+				: 'No relevant company mentions found.',
 			funnel,
 			results,
 		}), { status: 200, headers });
-
 	} catch (err) {
 		return new Response(JSON.stringify({
 			error: 'News fetch failed',

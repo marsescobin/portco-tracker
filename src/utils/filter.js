@@ -57,7 +57,6 @@ ${articleList}`;
 		},
 		body: JSON.stringify({
 			model: MODEL,
-			temperature: 0,
 			messages: [{ role: 'user', content: prompt }],
 		}),
 	});

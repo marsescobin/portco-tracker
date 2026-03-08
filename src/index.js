@@ -1,5 +1,5 @@
 import { scrapeCompanies } from './routes/scrape.js';
-import { fetchNews } from './routes/rss.js';
+import { fetchNews, runPipeline } from './routes/rss.js';
 
 const headers = {
 	'Access-Control-Allow-Origin': '*',
@@ -9,6 +9,16 @@ const headers = {
 };
 
 export default {
+	// Cron trigger — runs the pipeline on schedule and saves results to DB
+	async scheduled(event, env, ctx) {
+		console.log(`[CRON] Pipeline triggered at ${new Date().toISOString()}`);
+		ctx.waitUntil(
+			runPipeline(env).catch((err) => {
+				console.error('[CRON] Pipeline failed:', String(err));
+			})
+		);
+	},
+
 	async fetch(request, env, ctx) {
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {
