@@ -1,0 +1,1236 @@
+{
+  "initialized_capital_companies": [
+    {
+      "name": "7 Cups",
+      "website_url": "http://7cups.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/289_c281f86f03.png",
+      "description": "7 Cups is affordable online therapy and free online emotional support provided by trained listeners interacting through an anonymous and 24/7 text chat.",
+      "is_unicorn": false
+    },
+    {
+      "name": "AdQuick",
+      "website_url": "http://adquick.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/580_9496a7df33.png",
+      "description": "AdQuick is a marketplace to buy and sell outdoor advertising as well as online tools to measure campaign attribution.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Adyton",
+      "website_url": "https://adyton.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/09_Adyton_Wordmark_Black_1_cde26a9955.jpg",
+      "description": "Adyton makes mobile applications for the Department of Defense, offering logistics and communications tools to improve military operations.",
+      "is_unicorn": false
+    },
+    {
+      "name": "A-Frame",
+      "website_url": "https://aframebrands.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/aframe_5b976dc1e1.jpg",
+      "description": "A-Frame is a portfolio of talent-led sustainable personal care brands creating products for underserved communities.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Albedo",
+      "website_url": "https://albedo.space/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Albedo_Logo_Web_Black_1_c6c67f1f3a.png",
+      "description": "Albedo is the highest resolution satellite imagery commercially available, offering aerial quality imaging from space.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Algolia",
+      "website_url": "https://algolia.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/339_5facfad742.png",
+      "description": "Algolia empowers builders with the search and recommendation services they need to build world-class website experiences.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Alix",
+      "website_url": "https://meetalix.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Alix_Logo_3_e0d0d8ddce.png",
+      "description": "Alix creates empathetic AI-powered technology to support with the process of estate settlement.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Alliance DAO",
+      "website_url": "https://alliance.xyz/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Alliance_Black_Icon_Over_Name_f918b57137.svg",
+      "description": "Alliance DAO is an accelerator for crypto founders to start and grow their companies.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Apero",
+      "website_url": "https://aperohealth.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Apero_Logo22_b78bcc6c3a.jpg",
+      "description": "Apero is an enterprise billing service for medical practices, offering a API and dashboard for eligibility, customer invoicing and navigating complex payer relationships.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Apollo",
+      "website_url": "https://apollographql.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/apollo_9e9f20a90b.jpg",
+      "description": "Apollo makes application development easier, better, and accessible to more people.",
+      "is_unicorn": true
+    },
+    {
+      "name": "AptDeco",
+      "website_url": "https://aptdeco.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3261_2cee9ad75a.png",
+      "description": "AptDeco is the leading furniture resale marketplace that handles all the logistics of buying and selling used furniture online. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Arena AI",
+      "website_url": "https://arena-ai.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/arena_ai_4216a870a5.jpg",
+      "description": "Arena uses AI to translate company data into a real-time simulation platform that offers insights into sales, pricing, promotion, and marketing strategies.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Around",
+      "website_url": "https://miro.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3096_ea60e19341.png",
+      "description": "Around, acquired by Miro, is video calling designed to help hybrid-remote teams create, collaborate, and celebrate together.",
+      "is_unicorn": false
+    },
+    {
+      "name": "AstroForge",
+      "website_url": "https://astroforge.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Astro_Forge_baff035e53.jpg",
+      "description": "AstroForge mines asteroids to extract valuable minerals in space.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Athelas",
+      "website_url": "https://athelas.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/368_f5ffedbf5a.png",
+      "description": "Athelas, merged with Commure, is medical testing that offers remote patient monitoring and telehealth services.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Atomic Finance",
+      "website_url": "https://atomic.finance/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/atomic_finance_804d0da225.jpg",
+      "description": "Atomic Finance offers a transparent way to earn yield on Bitcoin without giving up custody.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Atoms",
+      "website_url": "https://atoms.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/atoms_48ab4bed7a.jpg",
+      "description": "Atoms offers impeccably designed shoes for everyday and every person.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Automat",
+      "website_url": "https://runautomat.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Automat_logo_16ffae41ee.png",
+      "description": "Automat makes creating automations (RPA) as easy as uploading a video or describing a workflow.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Ava",
+      "website_url": "https://ava.me/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/5497_668313e615.png",
+      "description": "Ava offers transcription services for businesses and educators to caption and translate live conversations with accuracy.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Ava Labs",
+      "website_url": "https://avalabs.org/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3274_adf7749af4.png",
+      "description": "AVAX, created by Ava Labs, is a cryptocurrency that uses Avalanche consensus.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Azura",
+      "website_url": "https://azura.xyz/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Azura_Logo_1_f06ef39ed3.png",
+      "description": "Azura is a full-stack trading platform for DeFi",
+      "is_unicorn": false
+    },
+    {
+      "name": "Basalt",
+      "website_url": "https://basalt.space/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Basalt_Logo_1dadf4fc0a.png",
+      "description": "Basalt brings AI into orbit for business and defense.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Beeper",
+      "website_url": "https://beeper.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/beeper_lockup_horizontal_1_63a4332100.png",
+      "description": "Beeper, acquired by Automattic, is a universal chat app that collates all of your messaging platforms, with secured encryptions and data privacy.\n\n",
+      "is_unicorn": false
+    },
+    {
+      "name": "Bellhops",
+      "website_url": "http://getbellhops.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/340_abba3ad9d2.png",
+      "description": "Bellhops is a full-service moving company that can be booked online with $0 down.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Beyond Aero",
+      "website_url": "https://www.beyond-aero.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/BA_black_logo_variation_6e772e3eda.png",
+      "description": "Beyond Aero is building the world's first electric business aircraft using hydrogen propulsion.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Bison Trails",
+      "website_url": "https://bisontrails.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3309_a3ea1cdb58.png",
+      "description": "Bison Trails, acquired by Coinbase and now part of Coinbase Cloud, provides a platform for users to run secure infrastructure on multiple blockchains.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Bland Company",
+      "website_url": "https://www.theblandcompany.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Bland_Logo_d7439f9ca3.png",
+      "description": "The Bland Company is harnessing abundant, overlooked agricultural byproducts to redefine protein production.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Blend",
+      "website_url": "https://blend.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/blend_97b48becfa.jpg",
+      "description": "Blend is cloud banking infrastructure powering billions of dollars in financial transactions everyday.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Bodyport",
+      "website_url": "http://bodyport.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1178_0cbab3cfd4.png",
+      "description": "Bodyport is a digital therapeutics company addressing complex chronic conditions by embedding a biomarker platform into easy-to-use devices.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Braid",
+      "website_url": "https://braid.network/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/wordmark_transparent_0ed06af8fd.png",
+      "description": "Braid is a platform for creators to share their content from every channel, in one place, enabling creators to engage directly with their community.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Bristle",
+      "website_url": "https://bristlehealth.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Bristle_Logo_1_a1921831df.jpg",
+      "description": "Bristle is saliva analysis testing that offers a breakdown of the oral microbiome, with personalized recommendations to proactively optimize your oral health.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Bruce",
+      "website_url": "https://bruce.bot/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Buce_547f8f9637.png",
+      "description": "Bruce is an AI-native relationship intelligence platform that automates high-trust professional introductions and powers a proprietary reputation graph for the next generation of AI search and discovery.\n",
+      "is_unicorn": false
+    },
+    {
+      "name": "Caliza",
+      "website_url": "https://caliza.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Caliza_Wordmark_282856753a.png",
+      "description": "Caliza's financial infrastructure removes global borders from commerce, enabling firms to offer real-time settlement and dollar accounts to their customers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Clairity",
+      "website_url": "https://clairitytech.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Clairity_logo_1593efd093.png",
+      "description": "Clairity builds low-cost and scalable systems for direct air capture of CO2 to enable gigaton scale carbon removal.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Clever",
+      "website_url": "https://clever.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/clever_ee838aa5b8.jpg",
+      "description": "Clever, aquired by Kahoot!, is the most widely used single sign-on portal for K-12 schools in the US.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Clipboard Health",
+      "website_url": "http://clipboardhealth.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/473_0339051fc7.png",
+      "description": "Clipboard Health is an online marketplace for skilled healthcare professionals to pick up extra shifts and for medical facilities to find additional staff.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Clone",
+      "website_url": "https://clonerobotics.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/black_small_3f4e48ee84.png",
+      "description": "Clone is building muscoskeletal intelligent androids to solve all the common problems of daily life.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Cofertility",
+      "website_url": "https://cofertility.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Cofertility_Soft_Black_32477d1ddc.png",
+      "description": "Cofertility is a fertility ecosystem that enables women to freeze their eggs for free when they donate half of the eggs to a family that otherwise can’t conceive, providing support and education for everyone involved along the way.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Coinbase",
+      "website_url": "https://www.coinbase.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/246_5aaf5a8578.png",
+      "description": "Coinbase is the world's leading cryptocurrency exchange platform.",
+      "is_unicorn": true
+    },
+    {
+      "name": "CoinTracker",
+      "website_url": "https://www.cointracker.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1741_c041bcb4a1.png",
+      "description": "CoinTracker is a holistic portfolio and tax manager for cryptocurrency token holders.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Color Genomics",
+      "website_url": "http://www.color.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/360_967d000bbb.png",
+      "description": "Color provides the technology and infrastructure for large-scale health initiatives, from population genomics programs to high throughput COVID-19 testing.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Coordinate",
+      "website_url": "https://coordinatehq.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/coordinatehq_black_b445739fa9.png",
+      "description": "Coordinate's software enables professional services companies to manage clients and automate processes, making it easy to run projects at scale.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Coperniq",
+      "website_url": "https://www.coperniq.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/coperniq_logo_wordmark_1_cc21d8680e.png",
+      "description": "Coperniq provides solar contractors with end-to-end workflow software, creating time and cost savings to help the industry scale.",
+      "is_unicorn": false
+    },
+    {
+      "name": "CreatorDAO",
+      "website_url": "https://creatordao.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Creator_DAO_54946def83.jpg",
+      "description": "CreatorDAO empowers successful content creators to invest in the next generation of creators.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Cron",
+      "website_url": "https://cron.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/cron_logotype_m_bw_20b7d52b89.png",
+      "description": "Cron, acquired by Notion, is the next-generation calendar for professionals and teams.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Cruise",
+      "website_url": "https://getcruise.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/321_bffae8aaaf.png",
+      "description": "Cruise, acquired by GM, is building technology to make vehicle operations fully autonomous.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Culdesac",
+      "website_url": "https://culdesac.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2469_a97101ef6a.png",
+      "description": "Culdesac is building the neighborhoods of the future, offering full development of smart, driverless communities.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Curri",
+      "website_url": "https://curri.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/4880_f5f72949c1.png",
+      "description": "Curri is an all-in-one logistics platform helping construction and industrial distributors deliver fast, reliably, and professionally.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Data Driven Bioscience",
+      "website_url": "https://datadrivenbioscience.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/DDB_logo_4562842fe3.jpg",
+      "description": "Data Driven Bioscience has created the tools for clinical labs to apply genomics for the speedy diagnosis of blood cancers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Datasaur",
+      "website_url": "http://datasaur.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/6426_279ca67c6a.png",
+      "description": "Datasaur is a customizable AI tool for small businesses, built specifically for NLP labeling.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Deepnight",
+      "website_url": "https://deepnight.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Deepnight_Logo_c06a211ba1.png",
+      "description": "Deepnight is developing next-gen night vision, combining emerging science in AI imaging with low-light sensors.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Depict.ai",
+      "website_url": "https://depict.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/7463_af0fd2d105.png",
+      "description": "Depict.ai provides the best e-commerce product recommendations for retailers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "DevCycle",
+      "website_url": "https://www.devcycle.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Dev_Cycle_60dbe4251a.png",
+      "description": "DevCycle, acquired by Dynatrace, The leading open standards feature management platform built to help developers ship faster.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Digger",
+      "website_url": "https://digger.dev/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/IMG_7852_d7ed9def49.png",
+      "description": "Digger builds tools for infrastructure developers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Double",
+      "website_url": "https://doublerobotics.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/249_e7a499e541.png",
+      "description": "Double helps telecommuters feel more connected to their colleagues by giving them a physical presence with the world's leading telepresence robot. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Drip Capital",
+      "website_url": "https://dripcapital.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/373_860140fcc8.png",
+      "description": "Drip Capital’s buyer finance solutions provide a low-cost line of credit that importers and traders can access at the click of a button.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Easypost",
+      "website_url": "https://easypost.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/282_b04e2b9ee2.png",
+      "description": "Easypost provides integration of shipping into any e-commerce platform, with a multi-carrier solution and flexible shipping APIs.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Eclipse Foods",
+      "website_url": "https://eclipsefoods.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/4241_84c4b9974f.png",
+      "description": "Eclipse is a proprietary plant-based dairy replacement, offering the same consistency and flavor as traditional milk.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Enable",
+      "website_url": "https://enablemedicine.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/enable_3d49995cb6.jpg",
+      "description": "Enable collaborates with the world’s leading researchers to construct detailed and searchable maps of complex diseases, making possible the exploration, navigation, and discovery of underlying biological rules.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Envoy",
+      "website_url": "https://envoy.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/301_ec374bb734.png",
+      "description": "Envoy provides the leading full-service workplace visitor and employee workspace management platform.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Feanix",
+      "website_url": "https://feanixbio.com/#",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Black_Logo_and_Name_2130x1200pt_1_f325d75466.png",
+      "description": "Feanix combines AI and modern genomics to optimize livestock management on farms. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Flexport",
+      "website_url": "http://flexport.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/313_b7dd47962f.png",
+      "description": "Flexport is a supply chain logistics company supporting end-to-end shipping in over 80 countries.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Flock Safety",
+      "website_url": "http://flocksafety.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/933_b4ff4061d2.png",
+      "description": "Flock Safety's cameras provide 24/7 license plate and sound monitoring for homes, businesses, and neighborhoods to protect against property crime, stolen vehicles, and more.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Fly.io",
+      "website_url": "https://fly.io",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/384_fc5d104ce8.png",
+      "description": "Fly.io is a platform to run full stack apps and databases close to your users, with physical servers in cities around the world.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Formic",
+      "website_url": "https://formic.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Formic_Vertical_Lockup_Black_27a05ab5ff.png",
+      "description": "Formic is a robotic rental service offering custom installation and a pay-by-the-hour model for automated manufacturing.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Fourthwall",
+      "website_url": "https://fourthwall.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/FOURTHWALL_LOGO_COINS_ACHROMATIC_3a9a79ec9b.png",
+      "description": "Fourthwall helps creators earn more and engage their communities through custom-branded homepages, shops, memberships, and more.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Front",
+      "website_url": "https://front.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/348_a41c98cddc.png",
+      "description": "Front is a customer communications hub, making collaboration easy and information accessible.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Garage",
+      "website_url": "https://www.shopgarage.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/garage_bw_6224e2ef1d.png",
+      "description": "Garage is the online marketplace revolutionizing the way America’s most essential equipment is bought and sold.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Glass Health",
+      "website_url": "https://glass.health/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Glass_Health_39f351d64c.png",
+      "description": "Glass Health empowers doctors with an AI-powered platform that supports clinical decision-making.",
+      "is_unicorn": false
+    },
+    {
+      "name": "GOAT",
+      "website_url": "http://goat.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/234_4a7eeb32db.png",
+      "description": "GOAT is a sneaker and modern apparel marketplace.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Greptile",
+      "website_url": "https://greptile.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Greptile_Wordmark_Light_df4d31bb6f.svg",
+      "description": "Greptile is an AI expert on any codebase that reviews pull requests, answers hard questions about complex codebases, writes Linear ticket descriptions, and more, with full codebase context.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Guide Labs",
+      "website_url": "https://www.guidelabs.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/logo_black_guide_labs_spaces_1_ce4b9f2d7b.png",
+      "description": "Guide Labs is building a new class of interpretable AI systems and foundation models that humans can reliably debug, trust, and understand.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Handoff",
+      "website_url": "https://handoff.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Handoff_logo_horizontal_1c585ce194.png",
+      "description": "Handoff uses AI to create instant construction estimates and automates business operations for contractors.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Heap",
+      "website_url": "https://heap.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/270_9b74ee3b80.png",
+      "description": "Heap is the leading digital insights platform that combines quantitative and qualitative analytics for a 360-degree view of the customer journey.",
+      "is_unicorn": false
+    },
+    {
+      "name": "HER",
+      "website_url": "https://weareher.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/352_8df3a78eff.png",
+      "description": "HER, acquired by Match Group, is a dating and community-building platform for lesbian, bisexual, queer women and gender-non-conforming icons worldwide.",
+      "is_unicorn": false
+    },
+    {
+      "name": "HomeVision",
+      "website_url": "https://homevision.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Home_Vision_Logo_Black_Ultra_Hi_Res_75b1641672.png",
+      "description": "Comprehensive collateral underwriting, powered by machine intelligence.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Horizon Blockchain Games",
+      "website_url": "https://horizongames.net/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2475_c9b3b417d9.png",
+      "description": "Horizon, acquired by Polygon Labs, is the maker of Sequence and Skyweaver, a trading card game with blockchain mechanics for persistent ownership of digital goods.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Hummingbot",
+      "website_url": "https://hummingbot.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/6344_83052ee57c.png",
+      "description": "Hummingbot is an open source toolbox for professional liquidity providers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Instacart",
+      "website_url": "http://instacart.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/243_d44b6bf550.png",
+      "description": "Instacart is a same-day grocery delivery company offering food and home essentials from a variety of local stores.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Invisible Universe",
+      "website_url": "https://invisibleuniverse.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/IU_LOGO_ed2bca3570.png",
+      "description": "Invisible Universe is an animation studio rewriting the playbook on developing kids and family entertainment.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Jinx",
+      "website_url": "https://thinkjinx.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3510_b6736cddb5.png",
+      "description": "Jinx provides nutritious dog food and treats made with real ingredients.",
+      "is_unicorn": false
+    },
+    {
+      "name": "kapa.ai",
+      "website_url": "https://www.kapa.ai",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Kapa_Logo_BW_e07baefd54.png",
+      "description": "Kapa.ai turns your knowledge base into a reliable and production-ready LLM-powered AI assistant that answers technical questions instantly.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Kayhan Space",
+      "website_url": "https://kayhan.space/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/kayhan_128d051bec.jpg",
+      "description": "Kayhan Space provides next-generation automation to satellite operations and spaceflight safety.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Kinlo",
+      "website_url": "https://kinlo.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/9085_9ec8f36ed9.png",
+      "description": "Kinlo is Naomi Osaka's suncare line designed for the melanin-rich. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Kinside",
+      "website_url": "https://kinside.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/kinside_d073901a80.jpg",
+      "description": "Kinside, acquired by UrbanSitter, is a marketplace connecting daycares/preschools with working parents via their employers for available and reliable childcare.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Laurel",
+      "website_url": "https://www.laurel.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Laurel_Wordmark_Digital_Nocturne_Black_a5e7ccdb11.png",
+      "description": "Laurel provides AI-powered timekeeping solutions for accounting and legal services.",
+      "is_unicorn": false
+    },
+    {
+      "name": "LeadGenius",
+      "website_url": "https://leadgenius.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/298_8f963fccf0.png",
+      "description": "LeadGenius delivers hard-to-find b2b contact and account data, insights, and signals from around the world.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Lever",
+      "website_url": "http://lever.co",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/244_ddd0b01e87.png",
+      "description": "Lever, acquired by Employ Inc., makes the world's leading recruiting software, with an applicant tracking system and candidate relationship management system in one platform. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Lingo.dev",
+      "website_url": "https://lingo.dev/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Lingo_for_Website_339ed60f4c.png",
+      "description": "Lingo.dev is building the world's first AI localization engine, automatically translating software products the moment developers push code changes and eliminating the need for manual translation management.",
+      "is_unicorn": false
+    },
+    {
+      "name": "LOB",
+      "website_url": "http://lob.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/292_b19bb6e7e5.png",
+      "description": "Lob offers a suite of APIs for enterprises looking to programmatically send letters, postcards, and checks.",
+      "is_unicorn": false
+    },
+    {
+      "name": "LTSE",
+      "website_url": "https://ltse.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/365_db46d9d061.png",
+      "description": "Long Term Stock Exchange, or LTSE, is a U.S. national securities exchange focused on building a better world.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Manifold",
+      "website_url": "https://manifold.xyz/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/manifold_e65a0ddcfe.jpg",
+      "description": "Manifold enables web3 creators to have creative ownership, preserve on-chain provenance, and interoperate with all major NFT marketplaces.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Medivis",
+      "website_url": "https://medivis.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2844_f2bfc114b2.png",
+      "description": "Medivis uses technological advancements in augmented reality and computer vision to create a holographic future for surgery.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Mezmo",
+      "website_url": "https://mezmo.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Mezmo_Logo_Grounded_Green_L_bb12f81c4b.png",
+      "description": "Mezmo is an observability platform that ingests, processes, and routes log data to fuel enterprise-level application development and delivery, security, and compliance use cases.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Mindstate Design Labs",
+      "website_url": "https://mindstate.design/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/9627_d8a644e132.png",
+      "description": "Mindstate Design Labs is a preclinical-stage biotechnology company developing the next generation of psychedelic-inspired therapeutics for intractable mental health conditions.",
+      "is_unicorn": false
+    },
+    {
+      "name": "MixerBox",
+      "website_url": "http://mixerbox.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/319_3b758dcc31.png",
+      "description": "MixerBox is an all-in-one media player for listening to music, videos, and podcasts from various services.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Modulo",
+      "website_url": "https://modulo.bio/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Modulo_True_Black_eea20e564f.svg",
+      "description": "Modulo is a Biotech company working to reprogram the brain’s immune system to cure neurodegenerative disorders.",
+      "is_unicorn": false
+    },
+    {
+      "name": "NanoVMs",
+      "website_url": "https://nanovms.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1942_13fdde6e50.png",
+      "description": "NanoVMs runs applications faster, safer, and with less cost using cloud unikernal infrastructure.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Nara Organics",
+      "website_url": "https://nara.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Nara_BW_78c5324a38.png",
+      "description": "The only USDA organic certified whole milk baby formula with no skim milk.",
+      "is_unicorn": false
+    },
+    {
+      "name": "NoScrubs",
+      "website_url": "https://noscrubs.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/No_Scrubs_Logo_315fc2558f.png",
+      "description": "NoScrubs is the fastest, most affordable laundry delivery service.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Numero",
+      "website_url": "https://numero.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3900_0acdc3c880.png",
+      "description": "Numero provides campaign fundraising software, supporting candidates in organizing contact data and managing donations.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Opendoor",
+      "website_url": "http://opendoor.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/336_68e010a170.png",
+      "description": "Opendoor is an online home-selling service aimed at streamlining the sales process down to a few days.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Orbio",
+      "website_url": "https://orbio.earth/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Orbio_Logo_b26564f1ee.png",
+      "description": "Orbio uses satellite imagery to detect methane emissions from oil and gas, providing data to energy and finance companies that want to identify the best and worst performing energy assets in their portfolios.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Orbital Operations",
+      "website_url": "https://www.orbitalops.tech/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Orbital_7e8001cb67.png",
+      "description": "Orbital Operations is building high-thrust vehicles for rapid orbital mobility.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Orderful",
+      "website_url": "http://orderful.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1500_d29e29abfc.png",
+      "description": "Orderful is a complete cloud EDI platform for manufacturers, distributors, retailers, and technology companies.",
+      "is_unicorn": false
+    },
+    {
+      "name": "OutRival",
+      "website_url": "https://outrival.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Out_Rival_Center_Black_bc94ea0d5b.png",
+      "description": "OutRival builds Conversational AI Agents that cut costs, grow revenue, and scale personalized engagement — starting with Admissions teams in Higher Education.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Pano",
+      "website_url": "https://pano.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/8824_c18225f9f6.png",
+      "description": "Pano is building the world’s first, fully-integrated disaster management platform focused on climate change resilience.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Panorama Education",
+      "website_url": "http://panoramaed.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/295_5b78b8b7fd.png",
+      "description": "Panorama offers an all-in-one data platform for school districts, pulling key student information into one place with visual dashboard reporting.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Papa",
+      "website_url": "https://papa.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2757_6ce04f7238.png",
+      "description": "Papa helps health plans and employers connect members and their families to real people for help with companionship, everyday tasks, transportation, and more.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Paperspace",
+      "website_url": "https://paperspace.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/366_0e4aef44ef.png",
+      "description": "Paperspace is a cloud computing and machine learning development platform for building, training, and deploying machine learning models.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Parcha",
+      "website_url": "https://www.parcha.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Parcha_flowerword_black_83842fced5.svg",
+      "description": "Parcha helps businesses scale faster by instantly automating compliance and operations using AI agents.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Partiful",
+      "website_url": "https://partiful.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Partiful_logo_04112024_b3fd327d3e.png",
+      "description": "Partiful is a social events platform that manages invites, RSVPs, chats, details, and photo sharing.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Patreon",
+      "website_url": "http://patreon.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/290_4eedcfd171.png",
+      "description": "Patreon is the leading platform for artists and creators to monetize their content directly from fans.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Pax",
+      "website_url": "https://paxai.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Pax_Logo_7fda3f8021.png",
+      "description": "Pax is automating the duty drawback process to lower the barrier of entry for tariff refunds.",
+      "is_unicorn": false
+    },
+    {
+      "name": "PermitFlow",
+      "website_url": "https://permitflow.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/permitflow_black_and_white_a0d3be7b29.png",
+      "description": "PermitFlow provides workflow and automation software to developers and general contractors to streamline their construction permitting process.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Picogrid",
+      "website_url": "https://picogrid.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Picogrid_Logo_Color_Dark_4ee6406e66.png",
+      "description": "Picogrid is a defense technology company that builds a platform to connect fragmented defense systems.",
+      "is_unicorn": false
+    },
+    {
+      "name": "PIN",
+      "website_url": "https://getpin.xyz/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/9167_c254816a40.png",
+      "description": "PIN (power in numbers) helps set up and launch community funds, providing the back office and legal framework, and handling yearly taxes.",
+      "is_unicorn": false
+    },
+    {
+      "name": "PlanGrid",
+      "website_url": "http://plangrid.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/224_a52ee05d76.png",
+      "description": "PlanGrid, acquired by Autodesk, provides access to critical project data for construction teams in a single app, enabling faster real-time decision-making.",
+      "is_unicorn": false
+    },
+    {
+      "name": "PlateIQ",
+      "website_url": "https://plateiq.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/382_85aef4a009.png",
+      "description": "PlateIQ simplifies and automates accounts payable for restaurant and hospitality brands.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Poker Skill",
+      "website_url": "https://www.pokerskill.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/pokerskill_logo_bw_1_d4f883bacc.png",
+      "description": "Poker Skill helps users level up their poker game with daily puzzles, bite-sized lessons and  challenges.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Polychain",
+      "website_url": "http://polychain.capital/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/874_f2879d3eb9.png",
+      "description": "Polychain is an investment firm that actively manages portfolios of blockchain assets.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Proudly",
+      "website_url": "https://proudly.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Proudly_Full_Logo_Color_d32d7f97da.jpg",
+      "description": "Proudly is Dwayne Wade and Gabrielle Union's baby care products brand, formulated to nourish all shades of melanated skin.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Radial Analytics",
+      "website_url": "https://radialanalytics.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/10166_8ff97144c4.png",
+      "description": "Radial Analytics offers advanced AI-powered solutions to help health professionals make smarter decisions for patients at key crossroads moments in their care journey.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Rainforest QA",
+      "website_url": "https://rainforestqa.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/245_58fdad736f.png",
+      "description": "Rainforest QA is a software testing platform that allows anyone to run complete end-to-end testing, fast.",
+      "is_unicorn": false
+    },
+    {
+      "name": "RankScience",
+      "website_url": "https://rankscience.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Outline_Logo_Type_1_447ada7419.png",
+      "description": "RankScience uses data science and NLP to automate SEO, from startups to Fortune 500 companies.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Reddit",
+      "website_url": "http://reddit.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/259_b8ac59f31c.png",
+      "description": "Reddit is the world's leading online forum.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Red Planet Labs",
+      "website_url": "https://redplanetlabs.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3535_284ae436aa.png",
+      "description": "Red Planet Labs is pioneering a programming tool, built in Clojure, to change the economics of software development.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Reibus",
+      "website_url": "https://reibus.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3501_e766f66ffc.png",
+      "description": "Reibus is a marketplace for buying and selling industrial commodities.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Repacket",
+      "website_url": "https://repacket.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Repacket_Logo_black_b1132c9412.png",
+      "description": "Repacket makes cybersecurity simple by blocking the majority of online threats by default.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Rescale",
+      "website_url": "http://rescale.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/220_317665cdfe.png",
+      "description": "Rescale builds cloud software and services to enable organizations of every size to deliver engineering and scientific breakthroughs.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Ridecell",
+      "website_url": "http://ridecell.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/217_66109b28fe.png",
+      "description": "Ridecell builds the technologies and solutions that unlock the full power of fleets and fleet management systems.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Rippling",
+      "website_url": "https://rippling.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/562_59e5001e88.png",
+      "description": "Rippling is the world's leading software for managing employee payroll, benefits, and company applications.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Ro",
+      "website_url": "https://ro.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/ro_301cba1e04.png",
+      "description": "Ro offers personalized telehealth treatment plans directly with a US-licensed healthcare professional, including fast prescription deliveries.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Rosebud",
+      "website_url": "https://www.rosebud.app/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/rosebud_logo_0314e5a0aa.svg",
+      "description": "An AI-powered journal for mental health and personal growth.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Routefusion",
+      "website_url": "https://routefusion.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/4739_6e5c3ddb6f.png",
+      "description": "Routefusion offers companies the ability to scale in any market worldwide by presenting the resources, expertise, and tools for cross-border payments.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Runway",
+      "website_url": "https://runway.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Runway_Logo_48eb2d1965.svg",
+      "description": "Runway is the first strategic planning platform for modern, high growth technology companies, giving teams a clear view of their entire business and enabling them to make better business decisions.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Runwise",
+      "website_url": "https://runwise.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/runwise_0c88246caa.jpg",
+      "description": "Runwise monitors and automatically controls and monitors heating and water systems for large residential and commercial buildings. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "Seamflow",
+      "website_url": "https://www.seamflow.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/unnamed_43bfae3e87.png",
+      "description": "Seamflow builds AI-native tools for the TIC industry, turning complex regulatory workflows into scalable operations.",
+      "is_unicorn": false
+    },
+    {
+      "name": "SendWave",
+      "website_url": "https://sendwave.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/280_253feeb084.png",
+      "description": "SendWave, acquired by WorldRemit, allows users to transfer money across continents without the hassle and high fees. ",
+      "is_unicorn": true
+    },
+    {
+      "name": "Shelf Engine",
+      "website_url": "http://shelfengine.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/367_c013edfc4d.png",
+      "description": "Shelf Engine, acquired by Crisp, reduces grocery store food waste through inventory and ordering automation for highly perishable items.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Shogun",
+      "website_url": "https://getshogun.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1811_16ba0c644b.png",
+      "description": "Shogun empowers brands to build and optimize e-commerce experiences for their customers without code or developer reliance.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Sift Science",
+      "website_url": "http://siftscience.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/221_4_5c11ab1ab8.png",
+      "description": "Sift offers large-scale machine-learning technology services that help e-commerce businesses detect and fight fraud.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Silo",
+      "website_url": "https://usesilo.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/silo_logo_9c57bebead.jpg",
+      "description": "Silo is the first produce enterprise resource planning software built for businesses to automate operations, react to market trends, and access capital.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Simple HealthKit",
+      "website_url": "https://www.simplehealthkit.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Simple_Health_Kit_Logo_6878850d26.png",
+      "description": "Simple HealthKit is addressing health inequity with the first human-centric, complete diagnostics platform that includes access to follow-up care for sexual wellness, respiratory health and chronic conditions.",
+      "is_unicorn": false
+    },
+    {
+      "name": "SkySelect",
+      "website_url": "https://skyselect.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2831_cd622174ba.png",
+      "description": "SkySelect is an eProcurement-as-a-Service (ePaaS) platform for aircraft parts.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Sol",
+      "website_url": "https://solreader.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Sol_Logo_Filled_Black_e6ac36b23c.svg",
+      "description": "Sol is a reading technology company creating tools to illuminate the mind.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Spaceium",
+      "website_url": "https://spaceium.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Spaceium_web_new_381619b528.png",
+      "description": "Spaceium is building in-space refueling stations to power the space superhighway.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Spate",
+      "website_url": "https://spate.nyc",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/2779_9c17f5a3e6.png",
+      "description": "Spate is a machine intelligence platform that spots the next big trend, analyzing over 20 billion search signals to identify shifts in consumer behavior for product and marketing innovation.",
+      "is_unicorn": false
+    },
+    {
+      "name": "SpecCheck",
+      "website_url": "https://speccheckrx.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Speccheck_logo_21480b5b1d.png",
+      "description": "SpecCheck is an all-in-one solution that provides accurate prescription eyewear ordering and tracking, seamless billing, and streamlined communication between patients, eye doctors, and their lab partners.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Stacker",
+      "website_url": "https://stackerhq.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/7451_0c85ab3955.png",
+      "description": "Stacker allows teams to create software out of spreadsheets with no coding required.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Standard Cognition",
+      "website_url": "https://standard.ai/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Standard_AI_Wordmark_Black_748c34c0f0.png",
+      "description": "Standard Cognition enables autonomous checkout for brick and mortar retailers through a computer vision platform.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Star Catcher",
+      "website_url": "https://star-catcher.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Star_Catcher_Logo_adb9c7914c.png",
+      "description": "Star Catcher's mission is to eliminate power constraints on satellites and other spacecraft by constructing the Star Catcher Network: the world’s first space-based energy grid.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Stellar Sleep",
+      "website_url": "https://stellarsleep.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/stellar_logo_dark_8150b0730b.png",
+      "description": "Stellar Sleep uses psychology to help the 25 million Americans with chronic insomnia who are getting inadequate and superficial care advice.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Streak",
+      "website_url": "http://streak.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/231_c617ec8c89.png",
+      "description": "Streak lets its users manage customers, sales, email support, bug tracking, and hiring via Gmail.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Synquote",
+      "website_url": "https://synquote.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/synquote_wordmark_7bb4178586.png",
+      "description": "Synquote offers decentralized access to cryptocurrency options markets.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Talos",
+      "website_url": "https://talos.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/6637_7c6a425dc9.png",
+      "description": "Talos provides buy-side institutions and service providers with technology infrastructure to power the full trade lifecycle for crypto.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Terminal 49",
+      "website_url": "https://terminal49.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/675_fb74f3ff06.png",
+      "description": "Terminal 49 is an all-in-one shipment and container tracking platform.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Termius",
+      "website_url": "https://termius.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3940_2cda684765.png",
+      "description": "Termius is the SSH (secure shell) client that works on desktop and mobile.",
+      "is_unicorn": false
+    },
+    {
+      "name": "The Mom Project",
+      "website_url": "https://themomproject.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/TMP_logo_3af9292c88.jpg",
+      "description": "The Mom Project connects world-class companies with talented and diverse women, unlocking the potential of moms in the workforce.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Theorem",
+      "website_url": "http://theoremlp.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/328_625b6d7255.png",
+      "description": "Theorem, acquired by Pagaya Technologies Ltd., uses data science and machine learning to invest in marketplace lending loans.",
+      "is_unicorn": false
+    },
+    {
+      "name": "TigerEye",
+      "website_url": "https://tigereye.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Tiger_Eye_Complete_Logo_24d0c35456.png",
+      "description": "TigerEye, acquired by Lennar, is an AI-powered planning platform for go-to-market leaders in sales, marketing, and finance, enabling rapid scenario testing and collaborative execution.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Tilt",
+      "website_url": "https://www.tilt.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Tilt_Logo_Black_RGB_9e69172c73.png",
+      "description": "Tilt is a better way to access money, helping more people get cash and credit by looking at real-time income and spending, not just credit scores, to see their potential.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Torch",
+      "website_url": "https://torch.io",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/1673_4b4e6cea03.png",
+      "description": "Torch integrates coaching, mentoring, and group learning for professional development and organizational success.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Trilobio",
+      "website_url": "https://www.trilo.bio/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Trilo_Logo_BW_bc616f10a7.png",
+      "description": "Trilobio is building the hardware and software to fully automate biology labs, transforming the fields of synthetic and molecular biology.",
+      "is_unicorn": false
+    },
+    {
+      "name": "TRM Labs",
+      "website_url": "https://trmlabs.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/3059_5c1edf6714.png",
+      "description": "TRM leads transaction monitoring and security for cryptocurrency trading and digital assets.",
+      "is_unicorn": true
+    },
+    {
+      "name": "True Link Financial",
+      "website_url": "https://truelinkfinancial.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/297_b9a980a957.png",
+      "description": "True Link provides financial solutions for people with complex needs and their caretakers.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Truepill",
+      "website_url": "https://truepill.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/960_01fd088147.png",
+      "description": "Truepill is the leading telehealth fulfillment and patient engagement platform.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Trunk",
+      "website_url": "https://trunk.io/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/8495_7b8380f2a9.png",
+      "description": "Trunk offers a developer-in-a-box solution to streamline the engineering process.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Upwave",
+      "website_url": "https://upwave.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/364_5ecc74b79d.png",
+      "description": "Upwave provides unified cross-media measurement and analytics platform for brand advertising.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Valar Atomics",
+      "website_url": "https://www.valaratomics.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Valar_Wordmark_Vertical_Dark_6ecb876618.png",
+      "description": "Valar Atomics is scaling nuclear energy for heavy industrial power and clean hydrocarbon fuel production.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Vetcove",
+      "website_url": "https://vetcove.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/371_f93bdc9099.png",
+      "description": "Vetcove powers the animal health supply chain.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Vibe Bio",
+      "website_url": "https://vibebio.com/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/10994_157ff65c39.png",
+      "description": "Vibe Bio is a biotech company composed of patients, scientists, and partners that is governed & funded by a crypto token.",
+      "is_unicorn": false
+    },
+    {
+      "name": "Weave",
+      "website_url": "http://getweave.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/312_fa5049f584.png",
+      "description": "Weave brings together a phone system and a suite of communication tools for medical professionals to manage patient relations.",
+      "is_unicorn": true
+    },
+    {
+      "name": "Withco",
+      "website_url": "https://with.co/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/4974_b37f8d3f38.png",
+      "description": "Withco helps small businesses buy and sell commercial properties.",
+      "is_unicorn": false
+    },
+    {
+      "name": "WorkRamp",
+      "website_url": "https://workramp.com",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/369_7c166902e5.png",
+      "description": "WorkRamp is the all-in-one learning platform for training, educating, and onboarding employees. ",
+      "is_unicorn": false
+    },
+    {
+      "name": "ZeroEntropy",
+      "website_url": "https://www.zeroentropy.dev/",
+      "logo_url": "https://ic-website-crm.s3.us-west-1.amazonaws.com/Logos_Zero_Entropy_12_3beac70458.png",
+      "description": "ZeroEntropy is an adaptive AI retrieval engine that understands context, learns from every query, and delivers accurate, personalized results—out of the box.",
+      "is_unicorn": false
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+	"name": "crimson-term-faa5",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.12.4",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.71.0"
+	},
+	"dependencies": {
+		"@extractus/feed-extractor": "^7.1.7",
+		"@mozilla/readability": "^0.6.0",
+		"linkedom": "^0.18.12",
+		"openai": "^6.27.0"
+	}
+}
