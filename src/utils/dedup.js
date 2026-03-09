@@ -2,6 +2,16 @@ import { supabaseHeaders } from '../services/supabase.js';
 
 const TABLE = 'init_seen_articles';
 
+/** Strips query params and fragments so utm/ref variants normalise to the same URL. */
+function normalizeUrl(url) {
+	try {
+		const u = new URL(url);
+		return `${u.origin}${u.pathname}`.replace(/\/$/, '');
+	} catch {
+		return url;
+	}
+}
+
 /**
  * Given a list of articles, returns only those whose URL hasn't been seen before.
  *
@@ -10,7 +20,7 @@ const TABLE = 'init_seen_articles';
  * @returns {Promise<Array>} unseen articles
  */
 export async function filterUnseenArticles(articles, env) {
-	const urls = articles.map((a) => a.link).filter(Boolean);
+	const urls = articles.map((a) => normalizeUrl(a.link)).filter(Boolean);
 	if (urls.length === 0) return [];
 
 	// Query Supabase via RPC to safely handle URLs with special characters
@@ -31,7 +41,7 @@ export async function filterUnseenArticles(articles, env) {
 	const seenRows = await response.json();
 	const seenUrls = new Set(seenRows.map((r) => r.url));
 
-	return articles.filter((a) => a.link && !seenUrls.has(a.link));
+	return articles.filter((a) => a.link && !seenUrls.has(normalizeUrl(a.link)));
 }
 
 /**
@@ -44,7 +54,7 @@ export async function filterUnseenArticles(articles, env) {
 export async function markArticlesSeen(articles, env) {
 	const rows = articles
 		.filter((a) => a.link)
-		.map((a) => ({ url: a.link }));
+		.map((a) => ({ url: normalizeUrl(a.link) }));
 
 	if (rows.length === 0) return;
 

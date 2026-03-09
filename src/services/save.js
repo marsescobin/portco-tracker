@@ -41,7 +41,7 @@ export async function saveDigests(results, runDate, funnel, env) {
 	}));
 
 	const response = await fetch(
-		`${env.SUPABASE_URL}/rest/v1/init_news_digests`,
+		`${env.SUPABASE_URL}/rest/v1/init_news_digests?on_conflict=company_name,run_date`,
 		{
 			method: 'POST',
 			headers: {

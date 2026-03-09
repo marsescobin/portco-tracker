@@ -44,8 +44,8 @@ async function summarizeCompany(company, companyDescription, articles, apiKey) {
 
 	const prompt = `You are helping a venture capital investor write their daily portfolio digest — a concise update they send to their LPs about what's happening across their portfolio companies.
 
-You will be given one or more news articles about a specific portfolio company. Your job is to write bullet points — one per genuinely distinct news topic, each exactly 1 sentence.
-If multiple articles cover the same story, combine them into a single bullet. Do not split one story into multiple bullets.
+You will be given one or more news articles about a specific portfolio company. Your job is to write bullet points — one per genuinely distinct topic, each exactly 1 sentence.
+If multiple articles cover the same story, combine them into a single bullet, unless there's details that is worth surfacing in multiple bullets. 
 Write like a sharp colleague giving a quick brief — engaging enough to forward to an investor, not dry analyst-speak. Lead with the most newsworthy signal first.
 Only include information that is directly supported by the provided articles. Do not infer, speculate, or add context that isn't explicitly stated in the source material.
 
@@ -143,6 +143,6 @@ Respond with a JSON object (no markdown, raw JSON only) with these fields:
 		summary,
 		sentiment,
 		sentimentReason,
-		articles: articles.map((a) => ({ title: a.title, link: a.link })),
+		articles: articles.map((a) => ({ title: a.title, link: a.link, contentMethod: a._contentMethod })),
 	};
 }

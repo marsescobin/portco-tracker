@@ -24,7 +24,7 @@ export interface Company {
 export interface Digest {
   id: string
   company_name: string
-  summary: string | null
+  summary: string[] | null
   sentiment: Sentiment | null
   sentiment_reason: string | null
   articles: DigestArticle[] | null

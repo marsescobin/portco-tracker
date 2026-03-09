@@ -7,14 +7,15 @@ interface DigestCardProps {
   digest: Digest
 }
 
-function parseSummary(raw: string): string {
+function normalizeSummary(raw: string | string[] | null): string[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw
+  // Legacy: stored as JSON string
   try {
     const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) return parsed.join(' ')
-  } catch {
-    // not JSON, use as-is
-  }
-  return raw
+    if (Array.isArray(parsed)) return parsed
+  } catch { /* not JSON */ }
+  return [raw]
 }
 
 function formatDate(dateStr: string) {
@@ -49,9 +50,14 @@ export function DigestCard({ digest }: DigestCardProps) {
 
       {/* Summary */}
       {digest.summary && (
-        <p className="text-sm text-foreground leading-relaxed py-2">
-          {parseSummary(digest.summary)}
-        </p>
+        <ul className="space-y-1 py-2">
+          {normalizeSummary(digest.summary).map((bullet, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-foreground leading-relaxed">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/40" />
+              {bullet}
+            </li>
+          ))}
+        </ul>
       )}
 
       {/* Articles */}
