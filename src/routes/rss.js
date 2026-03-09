@@ -5,7 +5,7 @@ import { summarizeByCompany } from '../utils/summarize.js';
 import { filterUnseenArticles, markArticlesSeen } from '../utils/dedup.js';
 import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
-import { saveDigests } from '../services/save.js';
+import { saveDigests, saveRun } from '../services/save.js';
 
 const RSS_FEEDS = [
 	// Tech News
@@ -144,10 +144,9 @@ export async function runPipeline(env) {
 	console.log(`[4] MATCH      ${uniqueMatchedArticles} unique articles matched (${candidates.length} total company hits across those articles)`);
 
 	if (candidates.length === 0) {
-		return {
-			funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []).totals,
-			results: [],
-		};
+		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []);
+		await saveRun(0, todayISO, totals, bySource, env);
+		return { funnel: totals, results: [] };
 	}
 
 	// Step 6: LLM relevance filter
@@ -160,10 +159,9 @@ export async function runPipeline(env) {
 	await markArticlesSeen(unseenArticles, env);
 
 	if (confirmed.length === 0) {
-		return {
-			funnel: buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []).totals,
-			results: [],
-		};
+		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
+		await saveRun(0, todayISO, totals, bySource, env);
+		return { funnel: totals, results: [] };
 	}
 
 	// Step 8: Fetch full content — attach _contentMethod to each article for funnel tracking
@@ -195,6 +193,9 @@ export async function runPipeline(env) {
 		await saveDigests(results, todayISO, funnel.totals, env);
 		console.log(`[8] SAVED      ${results.length} digests to init_news_digests`);
 	}
+
+	// Always record the run so the UI can show "last checked at"
+	await saveRun(results.length, todayISO, funnel.totals, funnel.bySource, env);
 	console.log(`[DONE]         Funnel totals: ${JSON.stringify(funnel.totals)}`);
 
 	return { funnel: funnel.totals, results };

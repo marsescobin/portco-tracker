@@ -60,6 +60,31 @@ export async function saveDigests(results, runDate, funnel, env) {
 	return response.json();
 }
 
+// Records every pipeline run — even if no results — so the UI can show "last checked at".
+export async function saveRun(resultCount, runDate, funnel, bySource, env) {
+	const response = await fetch(
+		`${env.SUPABASE_URL}/rest/v1/init_pipeline_runs`,
+		{
+			method: 'POST',
+			headers: supabaseHeaders(env),
+			body: JSON.stringify({
+				run_date: runDate,
+				run_at: new Date().toISOString(),
+				result_count: resultCount,
+				funnel,
+				by_source: bySource,
+			}),
+		}
+	);
+
+	if (!response.ok) {
+		const error = await response.text();
+		throw new Error(`Supabase saveRun failed: ${error}`);
+	}
+
+	return response.json();
+}
+
 // Seeds companies from the local companies.json file.
 // Uses upsert (merge-duplicates) so it's safe to call multiple times.
 export async function seedCompanies(companies, env) {

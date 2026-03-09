@@ -13,10 +13,9 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	// Cron triggers — times in UTC (PST = UTC-8, PDT = UTC-7)
-	// 6am, 9am, 12pm, 3pm, 6pm PST
+	// Cron trigger — runs every hour
 	"triggers": {
-		"crons": ["0 14 * * *", "0 17 * * *", "0 20 * * *", "0 23 * * *", "0 2 * * *"]
+		"crons": ["0 * * * *"]
 	}
 	/**
 	 * Smart Placement
