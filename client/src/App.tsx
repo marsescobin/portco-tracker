@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Nav } from '@/components/Nav'
 import Companies from './pages/Companies'
-import Digest from './pages/Digest'
+import Daily from './pages/Daily'
 import Admin from './pages/Admin'
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/companies" replace />} />
           <Route path="/companies" element={<Companies />} />
-          <Route path="/digest" element={<Digest />} />
+          <Route path="/daily" element={<Daily />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>

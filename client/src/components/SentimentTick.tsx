@@ -4,6 +4,7 @@ import type { Sentiment } from '@/lib/types'
 interface SentimentTickProps {
   sentiment: Sentiment | null
   size?: 'sm' | 'md'
+  showLabel?: boolean
 }
 
 const config = {
@@ -24,7 +25,7 @@ const config = {
   },
 }
 
-export function SentimentTick({ sentiment, size = 'md' }: SentimentTickProps) {
+export function SentimentTick({ sentiment, size = 'md', showLabel = true }: SentimentTickProps) {
   if (!sentiment) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs text-muted-foreground">
@@ -44,7 +45,7 @@ export function SentimentTick({ sentiment, size = 'md' }: SentimentTickProps) {
       title={label}
     >
       <Icon className={iconSize} strokeWidth={2.5} />
-
+      {showLabel && label}
     </span>
   )
 }

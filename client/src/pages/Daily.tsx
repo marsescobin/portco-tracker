@@ -3,7 +3,7 @@ import { useDailyDigestCounts } from '@/hooks/useDailyDigestCounts'
 import { HeatmapCalendar } from '@/components/HeatmapCalendar'
 import { DayPanel } from '@/components/DayPanel'
 
-export default function Digest() {
+export default function Daily() {
   const year = new Date().getFullYear()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
@@ -18,30 +18,28 @@ export default function Digest() {
 
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">News Coverage</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Daily</h1>
         <p className="text-sm text-muted-foreground">
           Daily portfolio digest activity. Click a square to see which companies were in the news.
         </p>
       </div>
 
-      {/* Heatmap */}
-      <HeatmapCalendar
-        year={year}
-        countsByDate={countsByDate}
-        selectedDate={selectedDate}
-        onSelectDate={handleSelectDate}
-        isLoading={isLoading}
-      />
+      <div className="w-full lg:w-fit lg:mx-auto space-y-6">
+        <HeatmapCalendar
+          year={year}
+          countsByDate={countsByDate}
+          selectedDate={selectedDate}
+          onSelectDate={handleSelectDate}
+          isLoading={isLoading}
+        />
 
-      {/* Day panel — appears below when a date is selected */}
-      {selectedDate && (
-      
-        <DayPanel
+        {selectedDate && (
+          <DayPanel
             date={selectedDate}
             onClose={() => setSelectedDate(null)}
           />
-        
-      )}
+        )}
+      </div>
 </div>
   )
 }

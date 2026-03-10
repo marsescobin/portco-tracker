@@ -57,14 +57,14 @@ export function CompanyRow({ company }: CompanyRowProps) {
           <SentimentTick sentiment={company.latest_sentiment} size="sm" />
         </td>
         <td className="py-3 px-4 text-xs text-muted-foreground">
+          {company.latest_sentiment_reason ?? '—'}
+        </td>
+        <td className="py-3 px-4 text-xs text-muted-foreground">
           {company.latest_run_date ? (
             <span title={formatAbsoluteDate(company.latest_run_date)}>
               {formatRelativeDate(company.latest_run_date)}
             </span>
           ) : '—'}
-        </td>
-        <td className="py-3 px-4 text-xs text-muted-foreground">
-          {company.latest_sentiment_reason ?? '—'}
         </td>
         <td className="py-3 px-4">
           {isOpen

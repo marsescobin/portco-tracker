@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useDailyDigests } from '@/hooks/useDailyDigests'
+import { usePipelineRunStats } from '@/hooks/usePipelineRunStats'
 import { SentimentTick } from '@/components/SentimentTick'
 import { DigestCard } from '@/components/DigestCard'
 
@@ -20,6 +21,7 @@ function formatPanelDate(dateStr: string): string {
 
 export function DayPanel({ date, onClose }: DayPanelProps) {
   const { data: digests, isLoading } = useDailyDigests(date)
+  const { data: stats } = usePipelineRunStats(date)
 
   return (
     <div className="w-fit mx-auto rounded-lg border border-border p-6 space-y-5">
@@ -28,11 +30,17 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
           <h2 className="text-base font-semibold">{formatPanelDate(date)}</h2>
-          <p className="text-sm text-muted-foreground">
-            {isLoading
-              ? 'Loading…'
-              : `${digests?.length ?? 0} compan${digests?.length === 1 ? 'y' : 'ies'} in the news`}
-          </p>
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          ) : stats ? (
+            <p className="text-sm text-muted-foreground">
+              Scanned {stats.articlesScanned.toLocaleString()} articles across {stats.sourcesMonitored} sources covering {digests?.length ?? 0} {digests?.length === 1 ? 'company' : 'companies'}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {digests?.length ?? 0} compan{digests?.length === 1 ? 'y' : 'ies'} in the news
+            </p>
+          )}
         </div>
         <button
           onClick={onClose}
@@ -56,14 +64,32 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
       ) : (
         <div className="space-y-6 divide-y divide-border">
           {digests?.map((digest) => (
-            <div key={digest.id} className="pt-5 first:pt-0 space-y-3">
-              {/* Company name + sentiment */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">{digest.company_name}</span>
-                <SentimentTick sentiment={digest.sentiment} size="sm" />
+            <div key={digest.id} className="pb-5 first:pt-0 space-y-3">
+              {/* Company header — name + description grouped tightly */}
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <SentimentTick sentiment={digest.sentiment} size="sm" showLabel={false} />
+                  {digest.company?.website ? (
+                    <a
+                      href={digest.company.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-sm font-semibold hover:underline"
+                    >
+                      {digest.company_name}
+                    </a>
+                  ) : (
+                    <span className="text-sm font-semibold">{digest.company_name}</span>
+                  )}
+                  {digest.company?.is_unicorn && <span title="Unicorn">🦄</span>}
+                </div>
+                {digest.company?.description && (
+                  <p className="text-xs text-muted-foreground leading-relaxed">{digest.company.description}</p>
+                )}
               </div>
               {/* Digest content */}
-              <DigestCard digest={digest} />
+              <DigestCard digest={digest} showDate={false} showDivider={false} showSentiment={false} showSentimentReason={false} />
             </div>
           ))}
         </div>

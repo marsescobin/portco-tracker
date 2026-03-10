@@ -5,6 +5,11 @@ import type { Digest } from '@/lib/types'
 
 interface DigestCardProps {
   digest: Digest
+  showDate?: boolean
+  showDivider?: boolean
+  showSentiment?: boolean
+  showSentimentLabel?: boolean
+  showSentimentReason?: boolean
 }
 
 function normalizeSummary(raw: string | string[] | null): string[] {
@@ -27,7 +32,7 @@ function formatDate(dateStr: string) {
   })
 }
 
-export function DigestCard({ digest }: DigestCardProps) {
+export function DigestCard({ digest, showDate = true, showDivider = true, showSentiment = true, showSentimentLabel = true, showSentimentReason = true }: DigestCardProps) {
   const [showSources, setShowSources] = useState(false)
   const hasArticles = digest.articles && digest.articles.length > 0
 
@@ -35,17 +40,21 @@ export function DigestCard({ digest }: DigestCardProps) {
     <div className="space-y-2">
       {/* Header: date, then sentiment + reason below */}
       <div className="space-y-1">
-        <span className="text-sm font-medium text-foreground">
-          {formatDate(digest.run_date)}
-        </span>
-        <div className="flex items-center gap-2">
-          <SentimentTick sentiment={digest.sentiment} size="sm" />
-          {digest.sentiment_reason && (
-            <span className="text-xs text-muted-foreground">
-              {digest.sentiment_reason}
-            </span>
-          )}
-        </div>
+        {showDate && (
+          <span className="text-sm font-medium text-foreground">
+            {formatDate(digest.run_date)}
+          </span>
+        )}
+        {(showSentiment || showSentimentReason) && (
+          <div className="flex items-center gap-2">
+            {showSentiment && <SentimentTick sentiment={digest.sentiment} size="sm" showLabel={showSentimentLabel} />}
+            {showSentimentReason && digest.sentiment_reason && (
+              <span className="text-xs text-muted-foreground">
+                {digest.sentiment_reason}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Summary */}
@@ -62,7 +71,7 @@ export function DigestCard({ digest }: DigestCardProps) {
 
       {/* Articles */}
       {hasArticles && (
-        <div className="border-t border-border pt-2 space-y-2">
+        <div className={`${showDivider ? 'border-t border-border' : ''} pt-2 space-y-2`}>
           <button
             onClick={() => setShowSources((v) => !v)}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"

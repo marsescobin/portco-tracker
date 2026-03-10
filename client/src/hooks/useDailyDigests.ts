@@ -8,12 +8,12 @@ export function useDailyDigests(date: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('init_news_digests')
-        .select('id, company_name, summary, sentiment, sentiment_reason, articles, run_date, run_at, funnel')
+        .select('id, company_name, summary, sentiment, sentiment_reason, articles, run_date, run_at, funnel, company:init_companies!company_name(description, website, is_unicorn)')
         .eq('run_date', date!)
         .order('company_name', { ascending: true })
 
       if (error) throw error
-      return (data ?? []) as Digest[]
+      return (data ?? []) as unknown as Digest[]
     },
     enabled: !!date,
   })

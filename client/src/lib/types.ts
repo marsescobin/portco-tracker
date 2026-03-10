@@ -31,4 +31,10 @@ export interface Digest {
   run_date: string
   run_at: string | null
   funnel: Record<string, number> | null
+  // joined from init_companies via FK
+  company?: {
+    description: string | null
+    website: string | null
+    is_unicorn: boolean | null
+  }
 }
