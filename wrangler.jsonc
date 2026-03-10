@@ -19,8 +19,8 @@
 	},
 	// Static assets — serves the built React frontend
 	// not_found_handling: "single-page-application" lets React Router handle unknown paths
-	"assets": {
-		"directory": "./client/dist",
-		"not_found_handling": "single-page-application"
-	}
+	// "assets": {
+	// 	"directory": "./client/dist",
+	// 	"not_found_handling": "single-page-application"
+	// }
 }

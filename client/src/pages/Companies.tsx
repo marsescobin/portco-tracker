@@ -43,8 +43,8 @@ function SkeletonRows() {
         <tr key={i} className="border-b border-border">
           <td className="py-3 px-4"><div className="h-4 w-32 rounded bg-muted animate-pulse" /></td>
           <td className="py-3 px-4"><div className="h-5 w-16 rounded-full bg-muted animate-pulse" /></td>
-          <td className="py-3 px-4"><div className="h-4 w-12 rounded bg-muted animate-pulse" /></td>
           <td className="py-3 px-4"><div className="h-4 w-40 rounded bg-muted animate-pulse" /></td>
+          <td className="py-3 px-4"><div className="h-4 w-12 rounded bg-muted animate-pulse" /></td>
           <td className="py-3 px-4" />
         </tr>
       ))}

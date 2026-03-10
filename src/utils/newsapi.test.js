@@ -5,7 +5,8 @@ import { matchCompanies } from './matcher.js';
 
 describe('NewsAPI coverage test', () => {
 	it('fetches articles for all portfolio companies and runs matcher', async () => {
-		const allArticles = await fetchFromNewsAPI(env.NEWS_API_KEY);
+		const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+		const allArticles = await fetchFromNewsAPI(env.NEWS_API_KEY, today, { maxBatches: 1 });
 
 		console.log(`\n📰 Total articles fetched: ${allArticles.length}`);
 

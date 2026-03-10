@@ -34,13 +34,14 @@ function chunk(arr, n) {
  *
  * @param {string} apiKey - NewsAPI key
  * @param {string} [from] - Optional ISO date string to filter articles (e.g. today's date)
+ * @param {{ maxBatches?: number }} [options]
  * @returns {Promise<Array<{ title, description, link, published, source }>>}
  */
-export async function fetchFromNewsAPI(apiKey, from) {
+export async function fetchFromNewsAPI(apiKey, from, options = {}) {
 	if (!apiKey) return [];
 
 	const allCompanies = companies.initialized_capital_companies;
-	const batches = chunk(allCompanies, BATCH_SIZE);
+	const batches = chunk(allCompanies, BATCH_SIZE).slice(0, options.maxBatches ?? Infinity);
 	const allArticles = [];
 
 	for (let i = 0; i < batches.length; i++) {
