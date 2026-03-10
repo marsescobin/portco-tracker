@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, Search } from 'lucide-react'
 import { useCompanies } from '@/hooks/useCompanies'
 import { CompanyRow } from '@/components/CompanyRow'
 import type { Company } from '@/lib/types'
@@ -56,8 +56,12 @@ export default function Companies() {
   const { data: companies, isLoading, isError } = useCompanies()
   const [sortKey, setSortKey] = useState<SortKey>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [query, setQuery] = useState('')
 
   const sorted = companies ? sortCompanies(companies, sortKey, sortDir) : companies
+  const filtered = sorted?.filter(c =>
+    c.name.toLowerCase().includes(query.toLowerCase())
+  )
 
   function handleSort(key: SortKey) {
     if (key === sortKey) {
@@ -72,18 +76,28 @@ export default function Companies() {
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-6">
 
       {/* Header */}
-      <div className="space-y-1">
+      <div className="space-y-3">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">Portfolio Companies</h1>
           {companies && (
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground font-medium">
-              {companies.length}
+              {query ? `${filtered?.length} of ${companies.length}` : companies.length}
             </span>
           )}
         </div>
         <p className="text-sm text-muted-foreground">
           Latest news digests and sentiment across the Initialized portfolio.
         </p>
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search companies..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full rounded-md border border-border bg-background pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
       </div>
 
       {/* Table */}
@@ -123,7 +137,15 @@ export default function Companies() {
               </tr>
             )}
 
-            {sorted?.map((company) => (
+            {!isLoading && !isError && companies && filtered?.length === 0 && query && (
+              <tr>
+                <td colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                  No companies match "{query}".
+                </td>
+              </tr>
+            )}
+
+            {filtered?.map((company) => (
               <CompanyRow key={company.id} company={company} />
             ))}
           </tbody>

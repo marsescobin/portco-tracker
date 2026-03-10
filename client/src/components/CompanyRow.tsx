@@ -8,7 +8,7 @@ import type { Company, Sentiment } from '@/lib/types'
 function sentimentDotClass(sentiment: Sentiment | null): string {
   if (sentiment === '+') return 'border-emerald-400 bg-emerald-100'
   if (sentiment === '-') return 'border-red-400 bg-red-100'
-  if (sentiment === 'mixed') return 'border-amber-400 bg-amber-100'
+  if (sentiment === 'mixed') return 'border-purple-400 bg-purple-100'
   return 'border-border bg-background'
 }
 
