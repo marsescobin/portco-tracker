@@ -48,7 +48,7 @@ export function SentimentTick({ sentiment, size = 'md', showLabel = true }: Sent
       title={label}
     >
       <Icon className={iconSize} strokeWidth={2.5} />
-      {shouldShowLabel && label}
+      {shouldShowLabel && <span className="hidden sm:inline">{label}</span>}
     </span>
   )
 }

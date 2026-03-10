@@ -41,11 +41,11 @@ function SkeletonRows() {
     <>
       {Array.from({ length: 8 }).map((_, i) => (
         <tr key={i} className="border-b border-border">
-          <td className="py-3 px-4"><div className="h-4 w-32 rounded bg-muted animate-pulse" /></td>
-          <td className="py-3 px-4"><div className="h-5 w-16 rounded-full bg-muted animate-pulse" /></td>
-          <td className="py-3 px-4"><div className="h-4 w-40 rounded bg-muted animate-pulse" /></td>
-          <td className="py-3 px-4"><div className="h-4 w-12 rounded bg-muted animate-pulse" /></td>
-          <td className="py-3 px-4" />
+          <td className="py-2 px-2 sm:py-3 sm:px-4"><div className="h-4 w-32 rounded bg-muted animate-pulse" /></td>
+          <td className="py-2 px-2 sm:py-3 sm:px-4"><div className="h-5 w-16 rounded-full bg-muted animate-pulse" /></td>
+          <td className="py-2 px-2 sm:py-3 sm:px-4"><div className="h-4 w-40 rounded bg-muted animate-pulse" /></td>
+          <td className="py-2 px-2 sm:py-3 sm:px-4"><div className="h-4 w-12 rounded bg-muted animate-pulse" /></td>
+          <td className="py-2 px-2 sm:py-3 sm:px-4" />
         </tr>
       ))}
     </>
@@ -87,21 +87,21 @@ export default function Companies() {
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="rounded-lg border border-border overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-muted text-left text-xs text-muted-foreground uppercase tracking-wide border-b border-border">
-              <th className="py-2.5 px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('name')}>
+              <th className="py-2 px-2 sm:py-2.5 sm:px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('name')}>
                 Company<SortIcon col="name" sortKey={sortKey} sortDir={sortDir} />
               </th>
-              <th className="py-2.5 px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('latest_sentiment')}>
+              <th className="py-2 px-2 sm:py-2.5 sm:px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('latest_sentiment')}>
                 Sentiment<SortIcon col="latest_sentiment" sortKey={sortKey} sortDir={sortDir} />
               </th>
-              <th className="py-2.5 px-4 font-medium">Reason</th>
-              <th className="py-2.5 px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('latest_run_date')}>
+              <th className="py-2 px-2 sm:py-2.5 sm:px-4 font-medium">Reason</th>
+              <th className="py-2 px-2 sm:py-2.5 sm:px-4 font-medium cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleSort('latest_run_date')}>
                 Last digest<SortIcon col="latest_run_date" sortKey={sortKey} sortDir={sortDir} />
               </th>
-              <th className="py-2.5 px-4" />
+              <th className="py-2 px-2 sm:py-2.5 sm:px-4" />
             </tr>
           </thead>
           <tbody>

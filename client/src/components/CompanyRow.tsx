@@ -47,26 +47,26 @@ export function CompanyRow({ company }: CompanyRowProps) {
         onClick={() => setIsOpen((v) => !v)}
         className="cursor-pointer border-b border-border hover:bg-muted/40 transition-colors"
       >
-        <td className="py-3 px-4 text-sm font-medium">
+        <td className="py-2 px-2 sm:py-3 sm:px-4 text-sm font-medium">
           <div className="flex items-center gap-2">
             {company.name}
             {company.is_unicorn && <span title="Unicorn">🦄</span>}
           </div>
         </td>
-        <td className="py-3 px-4">
+        <td className="py-2 px-2 sm:py-3 sm:px-4">
           <SentimentTick sentiment={company.latest_sentiment} size="sm" />
         </td>
-        <td className="py-3 px-4 text-xs text-muted-foreground">
+        <td className="py-2 px-2 sm:py-3 sm:px-4 text-xs text-muted-foreground">
           {company.latest_sentiment_reason ?? '—'}
         </td>
-        <td className="py-3 px-4 text-xs text-muted-foreground">
+        <td className="py-2 px-2 sm:py-3 sm:px-4 text-xs text-muted-foreground">
           {company.latest_run_date ? (
             <span title={formatAbsoluteDate(company.latest_run_date)}>
               {formatRelativeDate(company.latest_run_date)}
             </span>
           ) : '—'}
         </td>
-        <td className="py-3 px-4">
+        <td className="py-2 px-2 sm:py-3 sm:px-4">
           {isOpen
             ? <ChevronUp className="h-4 w-4 text-muted-foreground ml-auto" />
             : <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto" />
