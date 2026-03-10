@@ -13,7 +13,7 @@ const env = Object.fromEntries(
 		.map(([key, ...rest]) => [key, rest.join('=')])
 );
 
-const MIN_CONTENT_LENGTH = 200;
+const MIN_CONTENT_LENGTH = 300;
 
 async function passToReadability(articleUrl) {
 	try {
