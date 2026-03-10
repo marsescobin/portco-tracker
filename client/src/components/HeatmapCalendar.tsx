@@ -9,6 +9,8 @@ const SHADES = [
   'bg-emerald-700',    // 4 — peak
 ]
 
+const SEED_DATE = '2026-03-08'
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
 
@@ -116,7 +118,7 @@ export function HeatmapCalendar({
   const jan1 = new Date(year, 0, 1)
   const dec31 = new Date(year, 11, 31)
   const weeks = buildWeeks(year)
-  const max = Math.max(...Object.values(countsByDate), 1)
+  const max = Math.max(...Object.entries(countsByDate).filter(([d]) => d !== SEED_DATE).map(([, v]) => v), 1)
   const monthLabels = calculateMonthLabels(weeks, year)
 
   const totalDigests = Object.values(countsByDate).reduce((a, b) => a + b, 0)
@@ -195,8 +197,11 @@ export function HeatmapCalendar({
                         return <div key={di} className="h-4 w-4" />
                       }
 
+                      const isSeedDate = key === SEED_DATE
                       const month = day.toLocaleDateString('en-US', { month: 'long' })
-                      const tooltipText = count === 0
+                      const tooltipText = isSeedDate
+                        ? `${count} digest${count !== 1 ? 's' : ''} on ${month} ${day.getDate()}, ${year} · Experimental data`
+                        : count === 0
                         ? `No digests on ${month} ${day.getDate()}, ${year}`
                         : `${count} digest${count !== 1 ? 's' : ''} on ${month} ${day.getDate()}, ${year}`
 
@@ -212,7 +217,9 @@ export function HeatmapCalendar({
                           onMouseLeave={() => setTooltip(null)}
                           className={[
                             'h-4 w-4 rounded-sm transition-all',
-                            isFuture && count === 0
+                            isSeedDate
+                              ? 'bg-amber-300 cursor-pointer hover:opacity-80'
+                              : isFuture && count === 0
                               ? 'bg-muted opacity-40 cursor-default'
                               : count > 0
                               ? `${SHADES[shadeIdx]} cursor-pointer hover:opacity-80`

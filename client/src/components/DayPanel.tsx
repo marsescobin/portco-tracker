@@ -4,6 +4,8 @@ import { usePipelineRunStats } from '@/hooks/usePipelineRunStats'
 import { SentimentTick } from '@/components/SentimentTick'
 import { DigestCard } from '@/components/DigestCard'
 
+const SEED_DATE = '2026-03-08'
+
 interface DayPanelProps {
   date: string
   onClose: () => void
@@ -50,6 +52,14 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
         </button>
       </div>
 
+      {/* Experimental data banner */}
+      {date === SEED_DATE && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
+          <span className="font-semibold"> Articles for March 8, 2026 were collected during a seed run and may include articles published before that date.
+          </span>
+        </div>
+      )}
+
       {/* Content */}
       {isLoading ? (
         <div className="space-y-4">
@@ -89,7 +99,7 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
                 )}
               </div>
               {/* Digest content */}
-              <DigestCard digest={digest} showDate={false} showDivider={false} showSentiment={false} showSentimentReason={false} />
+              <DigestCard digest={digest} showDate={false} showDivider={false} showSentiment={false} showSentimentReason={false} showSeedBanner={false} />
             </div>
           ))}
         </div>

@@ -10,7 +10,10 @@ interface DigestCardProps {
   showSentiment?: boolean
   showSentimentLabel?: boolean
   showSentimentReason?: boolean
+  showSeedBanner?: boolean
 }
+
+const SEED_DATE = '2026-03-08'
 
 function normalizeSummary(raw: string | string[] | null): string[] {
   if (!raw) return []
@@ -32,12 +35,20 @@ function formatDate(dateStr: string) {
   })
 }
 
-export function DigestCard({ digest, showDate = true, showDivider = true, showSentiment = true, showSentimentLabel = true, showSentimentReason = true }: DigestCardProps) {
+export function DigestCard({ digest, showDate = true, showDivider = true, showSentiment = true, showSentimentLabel = true, showSentimentReason = true, showSeedBanner = true }: DigestCardProps) {
   const [showSources, setShowSources] = useState(false)
   const hasArticles = digest.articles && digest.articles.length > 0
 
   return (
     <div className="space-y-2">
+      {/* Experimental data banner */}
+      {showSeedBanner && digest.run_date === SEED_DATE && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
+          <span className="font-semibold"> Articles for March 8, 2026 were collected during a seed run and may include articles published before this date.
+          </span>
+        </div>
+      )}
+
       {/* Header: date, then sentiment + reason below */}
       <div className="space-y-1">
         {showDate && (
