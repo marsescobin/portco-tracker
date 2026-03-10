@@ -4,6 +4,7 @@ const links = [
   { to: '/companies', label: 'Companies' },
   { to: '/digest', label: 'Coverage' },
   { to: '/admin', label: 'Admin' },
+ // {to: '/search', label: 'Search'},
 ]
 
 export function Nav() {
