@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "crimson-term-faa5",
+	"name": "initialized-portco",
 	"main": "src/index.js",
 	"compatibility_date": "2026-03-01",
 	"observability": {
@@ -19,8 +19,8 @@
 	},
 	// Static assets — serves the built React frontend
 	// not_found_handling: "single-page-application" lets React Router handle unknown paths
-	// "assets": {
-	// 	"directory": "./client/dist",
-	// 	"not_found_handling": "single-page-application"
-	// }
+	"assets": {
+		"directory": "./client/dist",
+		"not_found_handling": "single-page-application"
+	}
 }
