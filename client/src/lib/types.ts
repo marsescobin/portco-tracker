@@ -1,4 +1,4 @@
-export type Sentiment = '+' | '-' | 'mixed'
+export type Sentiment = '+' | '-' | 'mixed' | 'neutral'
 
 export interface DigestArticle {
   link: string

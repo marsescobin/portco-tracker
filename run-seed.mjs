@@ -15,10 +15,11 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { filterCandidates } from './src/utils/filter.js';
+import { filterBySignal } from './src/utils/news-relevance.js';
 import { fetchArticleContent } from './src/utils/fetchContent.js';
 import { summarizeByCompany } from './src/utils/summarize.js';
 import { markArticlesSeen } from './src/utils/dedup.js';
-import { saveDigests, saveRun } from './src/services/save.js';
+import { saveDigests, saveRun, fetchTodaysDigests } from './src/services/save.js';
 import { supabaseHeaders } from './src/services/supabase.js';
 
 // ─── Keys (loaded from .dev.vars) ────────────────────────────────────────────
@@ -32,11 +33,13 @@ const env = Object.fromEntries(
 );
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SEED_DATE       = '2026-03-08';
-const SEARCH_LIMIT    = 5;
-const BATCH_SIZE      = 10;
-const BATCH_DELAY     = 2000; // ms between batches
-const START_FROM_BATCH = 7;   // 1-indexed — set to 1 to run from the beginning
+const SEED_DATE        = '2026-03-08';
+const SEARCH_LIMIT     = 5;
+const BATCH_SIZE       = 10;
+const BATCH_DELAY      = 2000; // ms between batches
+const START_FROM_BATCH = 1;    // 1-indexed — set to 1 to run from the beginning
+const MAX_COMPANIES    = 50;   // cap for this test run
+const FILTER_COMPANY   = null; // set to a company name to test a single company
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -44,13 +47,32 @@ function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchAllCompanies() {
-	const res = await fetch(
+async function fetchCompaniesWithoutDigest() {
+	// All companies that have a search_query set
+	const allRes = await fetch(
 		`${env.SUPABASE_URL}/rest/v1/init_companies?select=name,description,search_query&search_query=not.is.null&limit=250`,
 		{ headers: supabaseHeaders(env) }
 	);
-	if (!res.ok) throw new Error(`Failed to fetch companies: ${await res.text()}`);
-	return res.json();
+	if (!allRes.ok) throw new Error(`Failed to fetch companies: ${await allRes.text()}`);
+	const all = await allRes.json();
+
+	// Companies that already have a digest for SEED_DATE
+	const existRes = await fetch(
+		`${env.SUPABASE_URL}/rest/v1/init_news_digests?select=company_name&run_date=eq.${SEED_DATE}&limit=250`,
+		{ headers: supabaseHeaders(env) }
+	);
+	const existing = existRes.ok ? await existRes.json() : [];
+	const seeded = new Set(existing.map((r) => r.company_name));
+
+	let missing = all.filter((c) => !seeded.has(c.name));
+	console.log(`   ${all.length} total | ${seeded.size} already seeded | ${missing.length} remaining`);
+
+	if (FILTER_COMPANY) {
+		missing = missing.filter((c) => c.name === FILTER_COMPANY);
+		console.log(`   Filtered to: ${FILTER_COMPANY} (${missing.length} match)`);
+	}
+
+	return missing.slice(0, MAX_COMPANIES);
 }
 
 async function searchCompany(company) {
@@ -68,12 +90,15 @@ async function searchCompany(company) {
 			return [];
 		}
 		const data = await res.json();
-		return (data.data ?? []).map(r => ({
+		const articles = (data.data ?? []).map(r => ({
 			title: r.title,
 			link: r.url,
 			description: r.description ?? '',
 			_source: 'firecrawl',
 		}));
+		console.log(`   🔍 [${company.name}] query: "Latest news on ${company.search_query}"`);
+		articles.forEach((a, i) => console.log(`      [${i + 1}] ${a.title}`));
+		return articles;
 	} catch (err) {
 		console.warn(`  ⚠️  ${company.name}: ${err.message}`);
 		return [];
@@ -85,14 +110,19 @@ async function searchCompany(company) {
 console.log(`\n🌱 Seed run — saving as ${SEED_DATE}`);
 console.log('='.repeat(60));
 
-// Step 1: Load all companies
+// Step 1: Load companies that don't yet have a 2026-03-08 digest
 console.log('\n[1] COMPANIES  Loading from Supabase...');
-const companies = await fetchAllCompanies();
-console.log(`           ${companies.length} companies loaded`);
+const companies = await fetchCompaniesWithoutDigest();
+console.log(`           ${companies.length} companies to process (capped at ${MAX_COMPANIES})`);
+
+// Fetch existing digests once — passed to summarizeByCompany for merge support.
+// Will be empty for all these companies since they haven't been seeded yet.
+const existingDigests = await fetchTodaysDigests(SEED_DATE, env);
 
 // Totals across all batches
 let totalSearched  = 0;
 let totalConfirmed = 0;
+let totalSignal    = 0;
 let totalDigests   = 0;
 const contentMethods = {};
 
@@ -134,7 +164,12 @@ for (let b = START_FROM_BATCH - 1; b < batches.length; b++) {
 	// LLM relevance filter
 	const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY);
 	totalConfirmed += confirmed.length;
+	const confirmedLinks = new Set(confirmed.map((c) => c.article.link));
 	console.log(`   LLM filter: ${confirmed.length}/${candidates.length} confirmed`);
+	for (const { article, company } of candidates) {
+		const kept = confirmedLinks.has(article.link);
+		console.log(`      ${kept ? '✅' : '❌'} [${company}] ${article.title}`);
+	}
 
 	// Mark all searched articles as seen (regardless of LLM outcome)
 	await markArticlesSeen(allArticles, env);
@@ -148,13 +183,35 @@ for (let b = START_FROM_BATCH - 1; b < batches.length; b++) {
 	const confirmedWithContent = await Promise.all(
 		confirmed.map(async (c) => {
 			const { content, method } = await fetchArticleContent(c.article, null);
-			contentMethods[method] = (contentMethods[method] || 0) + 1;
+			console.log(`      📄 [${c.company}] ${method.padEnd(16)} ${c.article.title}`);
 			return { ...c, article: { ...c.article, content, _contentMethod: method } };
 		})
 	);
 
-	// Summarise by company
-	const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY);
+	// Signal filter — drop articles with no meaningful investor signal
+	const withSignal = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
+	totalSignal += withSignal.length;
+	const signalLinks = new Set(withSignal.map((c) => c.article.link));
+	console.log(`   Signal filter: ${withSignal.length}/${confirmedWithContent.length} passed`);
+	for (const { article, company } of confirmedWithContent) {
+		const kept = signalLinks.has(article.link);
+		console.log(`      ${kept ? '✅' : '❌'} [${company}] ${article.title}`);
+	}
+
+	// Count content methods only for articles that passed the signal filter
+	for (const { article } of withSignal) {
+		if (article._contentMethod) {
+			contentMethods[article._contentMethod] = (contentMethods[article._contentMethod] || 0) + 1;
+		}
+	}
+
+	if (withSignal.length === 0) {
+		console.log('   (nothing passed signal filter)\n');
+		continue;
+	}
+
+	// Summarise by company (merge with existing digests if any)
+	const results = await summarizeByCompany(withSignal, env.OPENAI_API_KEY, existingDigests);
 	totalDigests += results.length;
 	console.log(`   Digests: ${results.length} companies summarised`);
 
@@ -194,5 +251,6 @@ console.log(`\n✅ Seed complete`);
 console.log(`   Companies processed : ${companies.length}`);
 console.log(`   Articles searched   : ${totalSearched}`);
 console.log(`   LLM confirmed       : ${totalConfirmed}`);
+console.log(`   Signal filter passed: ${totalSignal}`);
 console.log(`   Digests saved       : ${totalDigests}`);
 console.log(`   Content methods     : ${JSON.stringify(contentMethods)}`);

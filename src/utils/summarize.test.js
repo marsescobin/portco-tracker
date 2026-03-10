@@ -38,6 +38,36 @@ const FAKE_CANDIDATES = [
 	},
 ];
 
+// Existing digest for Skyline Robotics — simulates what was saved in an earlier run today
+const EXISTING_DIGESTS = {
+	'Skyline Robotics': {
+		company_name: 'Skyline Robotics',
+		summary: [
+			'Launched Gen 2 hardware cutting cleaning time by 40%, expanding to Chicago, Houston, and Seattle.',
+		],
+		sentiment: '+',
+		sentiment_reason: 'strong product launch',
+		articles: [
+			{ title: 'Skyline Robotics launches Gen 2 hardware with 40% faster cleaning speeds', link: 'https://techcrunch.com/skyline-robotics-gen2' },
+		],
+	},
+};
+
+// New article for Skyline Robotics — arrived in a later pipeline run same day
+const MERGE_CANDIDATES = [
+	{
+		company: 'Skyline Robotics',
+		companyDescription: 'Builds autonomous robots for high-rise window cleaning.',
+		article: {
+			title: 'Skyline Robotics raises $50M Series C to accelerate international expansion',
+			link: 'https://techcrunch.com/skyline-robotics-series-c',
+			content: `Skyline Robotics announced a $50M Series C round led by Sequoia Capital, with participation from existing investors. 
+			CEO Maya Lin said the funding will go toward expanding into Europe and Southeast Asia, targeting 20 new cities by end of 2027. 
+			The round comes just days after the company announced its Gen 2 hardware launch.`,
+		},
+	},
+];
+
 describe('Summarizer — fake data smoke test', () => {
 	it('generates summaries with sentiment for fake portfolio companies', async () => {
 		const API_KEY = env.OPENAI_API_KEY;
@@ -51,6 +81,32 @@ describe('Summarizer — fake data smoke test', () => {
 			console.log(`   Sentiment:  ${sentiment}  (${sentimentReason})`);
 			console.log(`   Summary:    ${summary}`);
 			console.log(`   Sources:    ${articles.map((a) => a.title).join(' | ')}`);
+		}
+		console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+	}, 30_000);
+
+	it('merges new articles into an existing digest from earlier today', async () => {
+		const API_KEY = env.OPENAI_API_KEY;
+		if (!API_KEY) throw new Error('OPENAI_API_KEY not set in .dev.vars');
+
+		const results = await summarizeByCompany(MERGE_CANDIDATES, API_KEY, EXISTING_DIGESTS);
+
+		console.log('\n━━━━━━━━━━━━━━━━━━ MERGE TEST ━━━━━━━━━━━━━━━━━━');
+		for (const { company, sentiment, sentimentReason, summary, articles } of results) {
+			console.log(`\n🏢 ${company}`);
+			console.log(`   Sentiment:      ${sentiment}  (${sentimentReason})`);
+			console.log(`   Summary bullets:`);
+			summary.forEach((s, i) => console.log(`     ${i + 1}. ${s}`));
+			console.log(`   Sources (${articles.length} total):`);
+			articles.forEach((a) => console.log(`     - ${a.title}`));
+
+			// Basic assertions
+			if (articles.length < 2) {
+				throw new Error(`Expected merged articles list to contain both old and new articles, got ${articles.length}`);
+			}
+			if (summary.length === 0) {
+				throw new Error('Expected at least one summary bullet');
+			}
 		}
 		console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 	}, 30_000);

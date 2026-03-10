@@ -5,7 +5,8 @@ import { summarizeByCompany } from '../utils/summarize.js';
 import { filterUnseenArticles, markArticlesSeen } from '../utils/dedup.js';
 import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
-import { saveDigests, saveRun } from '../services/save.js';
+import { saveDigests, saveRun, fetchTodaysDigests } from '../services/save.js';
+import { filterBySignal } from '../utils/news-relevance.js';
 
 const RSS_FEEDS = [
 	// Tech News
@@ -181,17 +182,31 @@ export async function runPipeline(env) {
 	}, {});
 	console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
 
-	// Step 9: LLM summarize by company
-	const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY);
+	// Step 9: Signal filter — drop articles with no meaningful investor signal
+	const withSignal = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
+	console.log(`[7] SIGNAL     ${withSignal.length} articles passed signal filter (${confirmedWithContent.length - withSignal.length} dropped)`);
 
-	console.log(`[7] SUMMARISE  ${results.length} companies summarised`);
+	if (withSignal.length === 0) {
+		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
+		await saveRun(0, todayISO, totals, bySource, env);
+		return { funnel: totals, results: [] };
+	}
 
-	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
+	// Step 10: Fetch any existing digests from earlier runs today so we can merge, not overwrite
+	const existingDigests = await fetchTodaysDigests(todayISO, env);
 
-	// Step 10: Save digests to DB (upsert — one row per company per day)
+	// Step 11: LLM summarize by company (merges with existing if present)
+	const results = await summarizeByCompany(withSignal, env.OPENAI_API_KEY, existingDigests);
+
+	const mergeCount = results.filter(r => existingDigests[r.company]).length;
+	console.log(`[8] SUMMARISE  ${results.length} companies summarised (${mergeCount} merged with existing)`);
+
+	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, withSignal);
+
+	// Step 12: Save digests to DB (upsert — one row per company per day)
 	if (results.length > 0) {
 		await saveDigests(results, todayISO, funnel.totals, env);
-		console.log(`[8] SAVED      ${results.length} digests to init_news_digests`);
+		console.log(`[9] SAVED      ${results.length} digests to init_news_digests`);
 	}
 
 	// Always record the run so the UI can show "last checked at"

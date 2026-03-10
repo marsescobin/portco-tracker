@@ -1,31 +1,5 @@
 import { supabaseHeaders } from './supabase.js';
 
-export async function saveCompanies(companies, env) {
-	const response = await fetch(
-		`${env.SUPABASE_URL}/rest/v1/init_companies`,
-		{
-			method: 'POST',
-			headers: supabaseHeaders(env),
-			body: JSON.stringify(
-				companies.map((c) => ({
-					name: c.name,
-					website: c.website,
-					description: c.description,
-					logo_url: c.imageLink,
-					is_unicorn: c.isUnicorn,
-				}))
-			),
-		}
-	);
-
-	if (!response.ok) {
-		const error = await response.text();
-		throw new Error(`Supabase insert failed: ${error}`);
-	}
-
-	return response.json();
-}
-
 // Upserts pipeline results into init_news_digests.
 // One row per company per day — overwrites on repeat runs.
 export async function saveDigests(results, runDate, funnel, env) {
@@ -58,6 +32,19 @@ export async function saveDigests(results, runDate, funnel, env) {
 	}
 
 	return response.json();
+}
+
+// Fetches all existing digests for today — used to merge with new articles on repeat runs.
+export async function fetchTodaysDigests(runDate, env) {
+	const response = await fetch(
+		`${env.SUPABASE_URL}/rest/v1/init_news_digests?select=company_name,summary,articles&run_date=eq.${runDate}`,
+		{ headers: supabaseHeaders(env) }
+	);
+
+	if (!response.ok) return {};
+
+	const rows = await response.json();
+	return Object.fromEntries(rows.map((r) => [r.company_name, r]));
 }
 
 // Records every pipeline run — even if no results — so the UI can show "last checked at".

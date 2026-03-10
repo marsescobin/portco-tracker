@@ -26,7 +26,7 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
   const { data: stats } = usePipelineRunStats(date)
 
   return (
-    <div className="w-fit mx-auto rounded-lg border border-border p-6 space-y-5">
+    <div className="w-full max-w-4xl mx-auto rounded-lg border border-border p-6 space-y-5">
 
       {/* Header */}
       <div className="flex items-start justify-between">
@@ -55,7 +55,7 @@ export function DayPanel({ date, onClose }: DayPanelProps) {
       {/* Experimental data banner */}
       {date === SEED_DATE && (
         <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
-          <span className="font-semibold"> Articles for March 8, 2026 were collected during a seed run and may include articles published before that date.
+          <span className="font-semibold"> Articles for March 8, 2026 were collected during a seed run and may include articles published before this date.
           </span>
         </div>
       )}

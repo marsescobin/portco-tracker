@@ -1,5 +1,4 @@
-import { scrapeCompanies } from './routes/scrape.js';
-import { fetchNews, runPipeline } from './routes/rss.js';
+import { fetchNews, runPipeline } from './routes/pipeline.js';
 
 const headers = {
 	'Access-Control-Allow-Origin': '*',
@@ -29,11 +28,6 @@ export default {
 
 		const url = new URL(request.url);
 		const path = url.pathname;
-
-		// Route: /api/scrape-companies
-		if (path === '/api/scrape-companies') {
-			return scrapeCompanies(headers, env);
-		}
 
 		// Route: /api/fetch-news
 		if (path === '/api/fetch-news') {

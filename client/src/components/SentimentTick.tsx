@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, X } from 'lucide-react'
+import { TrendingUp, TrendingDown, ArrowUpDown, Minus } from 'lucide-react'
 import type { Sentiment } from '@/lib/types'
 
 interface SentimentTickProps {
@@ -21,10 +21,16 @@ const config = {
     className: 'bg-red-50 text-red-700 border-red-200',
   },
   mixed: {
-    icon: X,
+    icon: ArrowUpDown,
     label: 'Mixed',
     showLabel: true,
-    className: 'bg-amber-50 text-amber-700 border-amber-200',
+    className: 'bg-purple-50 text-purple-700 border-purple-200',
+  },
+  neutral: {
+    icon: Minus,
+    label: 'Neutral',
+    showLabel: true,
+    className: 'bg-yellow-50 text-yellow-700 border-yellow-200',
   },
 }
 

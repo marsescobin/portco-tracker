@@ -181,7 +181,7 @@ export function HeatmapCalendar({
               </div>
 
               {/* Grid cells */}
-              <div className="flex gap-1" style={{ width: `${totalWidth}px` }}>
+              <div className="flex gap-1 mb-1" style={{ width: `${totalWidth}px` }}>
                 {weeks.map((week, wi) => (
                   <div key={wi} className="flex flex-col gap-1">
                     {week.map((day, di) => {
