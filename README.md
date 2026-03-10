@@ -181,20 +181,20 @@ npx wrangler secret put SUPABASE_ANON_KEY
 
 ## AI Tools Used
 
-Cursor (primary) — used throughout for code generation, refactoring, and debugging.
+Cursor (primary) — used throughout for brainstorming, code generation, testing, and documentation.
 
 ---
 
 ## Decisions & Trade-offs
 
 **Dual news source strategy**
-RSS feeds give real-time, broad coverage across tech/business/startup verticals. NewsAPI adds targeted coverage — querying company names directly against a curated list of trusted domains (TechCrunch, VentureBeat, Forbes, Business Insider, Crunchbase, etc.) to reduce noise. Running both in parallel maximises coverage while keeping latency flat. We also evaluated newsdata.io and Newsmesh but found the signal-to-noise ratio and free tier limits less suited to the use case. Note: NewsAPI's free tier blocks non-localhost requests, so in production the pipeline runs on RSS feeds only; NewsAPI is active in local development.
+RSS feeds give real-time, broad coverage across tech/business/startup verticals. NewsAPI adds targeted coverage — querying company names directly against a curated list of trusted domains (TechCrunch, VentureBeat, Forbes, Business Insider, Crunchbase, etc.) to reduce noise. Running both in parallel maximises coverage while keeping latency flat. Also evaluated newsdata.io and Newsmesh but found the signal-to-noise ratio and free tier limits less suited to the use case. Note: NewsAPI's free tier blocks non-localhost requests, so in production the pipeline runs on RSS feeds only; NewsAPI is active in local development.
 
 **Whole-word regex matching + domain matching**
 Company names are matched using word-boundary regex (`\bCompanyName\b`) so partial matches (e.g. "Front" matching "Frontend") are excluded. On top of that, each company's website domain is also checked against the article text, which catches articles that link to the company but don't spell out its name in full. Both checks are case-insensitive.
 
 **LLM disambiguation via company descriptions**
-An early version used a manual `lowConfidence` blocklist for ambiguous names. We dropped that in favour of passing the company's actual description to the LLM relevance filter — letting the model do the disambiguation rather than maintaining a brittle blocklist. This scales better as the portfolio grows.
+An early version used a manual `lowConfidence` blocklist for ambiguous names. Dropped that in favour of passing the company's actual description to the LLM relevance filter — letting the model do the disambiguation rather than maintaining a brittle blocklist. This scales better as the portfolio grows.
 
 **Three-stage LLM pipeline**
 Articles are first matched by keyword (cheap), then confirmed by GPT-5-mini (more expensive), then filtered for investor signal before any summarization happens. This avoids wasting Firecrawl credits and summarization tokens on false positives. Each prompt stays focused on one task. The signal filter was added after watching production data — early runs showed articles making it through the relevance filter that were technically about the company but had nothing useful to contribute (e.g. passing mentions in roundups). Adding a dedicated signal stage before summarization cut this noise significantly.
