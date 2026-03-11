@@ -13,17 +13,20 @@ const CANDIDATES_PER_BATCH = 10; // smaller batches — content is much longer t
  * @returns {Promise<Array<{ article, company: string, companyDescription: string }>>}
  */
 export async function filterBySignal(candidates, apiKey) {
-	if (candidates.length === 0) return [];
+	if (candidates.length === 0) return { filtered: [], signalLog: [] };
 
-	const signalArticles = [];
+	const allResults = [];
 
 	for (let i = 0; i < candidates.length; i += CANDIDATES_PER_BATCH) {
 		const batch = candidates.slice(i, i + CANDIDATES_PER_BATCH);
-		const batchSignal = await filterSignalBatch(batch, apiKey);
-		signalArticles.push(...batchSignal);
+		const batchResults = await filterSignalBatch(batch, apiKey);
+		allResults.push(...batchResults);
 	}
 
-	return signalArticles;
+	return {
+		filtered: allResults.filter((r) => r.signal),
+		signalLog: allResults,
+	};
 }
 
 async function filterSignalBatch(batch, apiKey) {
@@ -102,7 +105,10 @@ ${articleList}`;
 	}
 
 	return results
-		.filter((r) => r.signal === true)
-		.map((r) => ({ ...batch[r.index - 1], signalReason: r.reason }))
+		.map((r) => {
+			const candidate = batch[r.index - 1];
+			if (!candidate) return null;
+			return { ...candidate, signal: r.signal, signalReason: r.reason };
+		})
 		.filter(Boolean);
 }

@@ -5,7 +5,7 @@ import { summarizeByCompany } from '../utils/summarize.js';
 import { filterUnseenArticles, markArticlesSeen } from '../utils/dedup.js';
 import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
-import { saveDigests, saveRun, fetchTodaysDigests } from '../services/save.js';
+import { saveDigests, saveRun, fetchTodaysDigests, saveSignalChecks } from '../services/save.js';
 import { filterBySignal } from '../utils/news-relevance.js';
 
 const RSS_FEEDS = [
@@ -96,10 +96,7 @@ function buildFunnel(allArticles, recentArticles, unseenArticles, candidates, co
  */
 export async function runPipeline(env) {
 	// Step 1: Compute today's date in PST (used for date filter + NewsAPI `from` param)
-	const todayPST = new Date(
-		new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })
-	);
-	const todayISO = todayPST.toISOString().split('T')[0]; // e.g. "2026-03-08"
+	const todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }); // e.g. "2026-03-08"
 
 	// Step 2: Fetch RSS feeds and NewsAPI in parallel
 	const [feedResults, newsApiArticles] = await Promise.all([
@@ -126,9 +123,10 @@ export async function runPipeline(env) {
 	console.log(`[1] FETCH      RSS: ${rssArticles.length} articles | NewsAPI: ${taggedNewsApiArticles.length} articles | Total: ${allArticles.length}`);
 
 	// Step 3: Filter to articles published today (PST)
+	const todayStartUTC = new Date(todayISO + 'T00:00:00-08:00'); // midnight PST, safe on any machine
 	const recentArticles = allArticles.filter((article) => {
 		if (!article.published) return true; // no date = pass through
-		return new Date(article.published) >= todayPST;
+		return new Date(article.published) >= todayStartUTC;
 	});
 
 	console.log(`[2] DATE FILTER ${recentArticles.length} passed (${allArticles.length - recentArticles.length} dropped — not today)`);
@@ -183,8 +181,12 @@ export async function runPipeline(env) {
 	console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
 
 	// Step 9: Signal filter — drop articles with no meaningful investor signal
-	const withSignal = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
+	const { filtered: withSignal, signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
 	console.log(`[7] SIGNAL     ${withSignal.length} articles passed signal filter (${confirmedWithContent.length - withSignal.length} dropped)`);
+
+	// ── SIGNAL MONITORING (START) ──────────────────────────────────────────
+	await saveSignalChecks(signalLog, todayISO, env);
+	// ── SIGNAL MONITORING (END) ────────────────────────────────────────────
 
 	if (withSignal.length === 0) {
 		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);

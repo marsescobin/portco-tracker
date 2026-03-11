@@ -64,18 +64,14 @@ describe('News relevance filter', () => {
 		const API_KEY = env.OPENAI_API_KEY;
 		if (!API_KEY) throw new Error('OPENAI_API_KEY not set in .dev.vars');
 
-		const results = await filterBySignal(CANDIDATES, API_KEY);
+		const { filtered: results, signalLog } = await filterBySignal(CANDIDATES, API_KEY);
 
 		console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 		console.log(`Passed: ${results.length} / ${CANDIDATES.length}`);
-		for (const { company, article, signalReason } of results) {
-			console.log(`\n  ✅ ${company} — "${article.title}"`);
+		for (const { company, article, signalReason } of signalLog) {
+			const icon = results.find((r) => r.article.link === article.link) ? '✅' : '❌';
+			console.log(`\n  ${icon} ${company} — "${article.title}"`);
 			console.log(`     Reason: ${signalReason}`);
-		}
-
-		const dropped = CANDIDATES.filter((c) => !results.find((r) => r.article.link === c.article.link));
-		for (const { company, article } of dropped) {
-			console.log(`\n  ❌ ${company} — "${article.title}" (dropped)`);
 		}
 		console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 

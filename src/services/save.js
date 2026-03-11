@@ -72,6 +72,38 @@ export async function saveRun(resultCount, runDate, funnel, bySource, env) {
 	return response.json();
 }
 
+// ── SIGNAL MONITORING (START) ─────────────────────────────────────────────
+// Saves all signal check results (pass + drop) for post-run inspection.
+// Safe to delete this function and its call in pipeline.js when done.
+export async function saveSignalChecks(signalLog, runDate, env) {
+	if (signalLog.length === 0) return;
+
+	const rows = signalLog.map((r) => ({
+		run_date: runDate,
+		run_at: new Date().toISOString(),
+		company: r.company,
+		article_url: r.article?.link ?? null,
+		article_title: r.article?.title ?? null,
+		signal: r.signal,
+		reason: r.signalReason ?? null,
+	}));
+
+	const response = await fetch(
+		`${env.SUPABASE_URL}/rest/v1/init_signal_checks`,
+		{
+			method: 'POST',
+			headers: supabaseHeaders(env),
+			body: JSON.stringify(rows),
+		}
+	);
+
+	if (!response.ok) {
+		const error = await response.text();
+		console.warn(`[SIGNAL MONITORING] saveSignalChecks failed (non-fatal): ${error}`);
+	}
+}
+// ── SIGNAL MONITORING (END) ───────────────────────────────────────────────
+
 // Seeds companies from the local companies.json file.
 // Uses upsert (merge-duplicates) so it's safe to call multiple times.
 export async function seedCompanies(companies, env) {

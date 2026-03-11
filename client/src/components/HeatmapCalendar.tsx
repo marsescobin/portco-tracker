@@ -10,6 +10,7 @@ const SHADES = [
 ]
 
 const SEED_DATE = '2026-03-08'
+const INGESTION_START_DATE = '2026-03-07'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
@@ -198,6 +199,8 @@ export function HeatmapCalendar({
                       }
 
                       const isSeedDate = key === SEED_DATE
+                      const isBeforeStart = key < INGESTION_START_DATE
+                      const isClickable = !isFuture && !isBeforeStart
                       const month = day.toLocaleDateString('en-US', { month: 'long' })
                       const tooltipText = isSeedDate
                         ? `${count} digest${count !== 1 ? 's' : ''} on ${month} ${day.getDate()}, ${year} · Experimental data`
@@ -208,8 +211,8 @@ export function HeatmapCalendar({
                       return (
                         <button
                           key={di}
-                          disabled={isFuture && count === 0}
-                          onClick={() => count > 0 && onSelectDate(key)}
+                          disabled={!isClickable}
+                          onClick={() => isClickable && onSelectDate(key)}
                           onMouseEnter={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect()
                             setTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top - 30 })
@@ -219,11 +222,11 @@ export function HeatmapCalendar({
                             'h-4 w-4 rounded-sm transition-all',
                             isSeedDate
                               ? 'bg-amber-300 cursor-pointer hover:opacity-80'
-                              : isFuture && count === 0
+                              : !isClickable
                               ? 'bg-muted opacity-40 cursor-default'
                               : count > 0
                               ? `${SHADES[shadeIdx]} cursor-pointer hover:opacity-80`
-                              : 'bg-muted cursor-default',
+                              : 'bg-muted cursor-pointer hover:opacity-60',
                             isToday && !isSelected ? 'ring-1 ring-offset-1 ring-border' : '',
                             isSelected ? 'ring-2 ring-offset-1 ring-foreground' : '',
                           ].join(' ')}

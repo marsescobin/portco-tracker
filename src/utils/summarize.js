@@ -39,7 +39,10 @@ async function summarizeCompany(company, companyDescription, articles, apiKey, e
 		].filter(Boolean).join('\n'))
 		.join('\n\n');
 
-	const hasExisting = existingDigest?.summary?.length > 0;
+	const existingSummary = Array.isArray(existingDigest?.summary)
+		? existingDigest.summary
+		: (typeof existingDigest?.summary === 'string' ? JSON.parse(existingDigest.summary) : []);
+	const hasExisting = existingSummary.length > 0;
 
 	const prompt = hasExisting
 		? `You are helping a venture capital investor update their daily portfolio digest.
@@ -47,7 +50,7 @@ async function summarizeCompany(company, companyDescription, articles, apiKey, e
 An earlier run today already produced a digest for this company. New articles have since come in. Your job is to update the digest by merging the new information into the existing bullets.
 
 ## Existing digest (from earlier today)
-${existingDigest.summary.map((b) => `- ${b}`).join('\n')}
+${existingSummary.map((b) => `- ${b}`).join('\n')}
 
 ## New articles
 ${articleList}
