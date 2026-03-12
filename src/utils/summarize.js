@@ -139,7 +139,7 @@ Respond with a JSON object (no markdown, raw JSON only):
 	const existingLinks = new Set(existingArticles.map((a) => a.link));
 	const newArticles = articles
 		.filter((a) => !existingLinks.has(a.link))
-		.map((a) => ({ title: a.title, link: a.link, contentMethod: a._contentMethod }));
+		.map((a) => ({ title: a.title, link: a.link, contentMethod: a._contentMethod, origin: a._origin ?? 'pipeline' }));
 	const mergedArticles = [...existingArticles, ...newArticles];
 
 	return {

@@ -1,4 +1,5 @@
 import { fetchNews, runPipeline } from './routes/pipeline.js';
+import { submitArticle } from './routes/submit.js';
 
 const headers = {
 	'Access-Control-Allow-Origin': '*',
@@ -32,6 +33,12 @@ export default {
 		// Route: /api/fetch-news
 		if (path === '/api/fetch-news') {
 			return fetchNews(headers, env);
+		}
+
+		// Route: POST /api/submit-article
+		// Manually submit a URL + company — fetches content, summarizes, saves to DB
+		if (path === '/api/submit-article' && request.method === 'POST') {
+			return submitArticle(request, headers, env);
 		}
 
 		// Route: /api/test-firecrawl?url=<encoded-url>

@@ -169,7 +169,7 @@ export async function runPipeline(env) {
 			const { content, method } = await fetchArticleContent(candidate.article, env.FIRECRAWL_API_KEY);
 			return {
 				...candidate,
-				article: { ...candidate.article, content, _contentMethod: method },
+				article: { ...candidate.article, content, _contentMethod: method, _origin: 'pipeline' },
 			};
 		})
 	);
