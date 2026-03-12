@@ -38,12 +38,16 @@ async function filterSignalBatch(batch, apiKey) {
 		].join('\n'))
 		.join('\n\n');
 
-	const prompt = `You are a relevance filter for a portfolio news tracker.
+	const prompt = `You are a noise filter for a venture capital portfolio news tracker. Your job is to catch junk or white noise articles. When in doubt, pass.
 
-For each article below, ask yourself one question: is this article genuinely about the company it's paired with, or does it just mention them in passing?
+For each article below, decide: does this article say anything specific about the company it's paired with?
 
-Pass it if the article is about the company — their products, people, news, press, opinions, or anything related to them directly.
-Drop it only if the company is not actually the subject (e.g. mentioned as a footnote, or a false name match).
+Pass it unless you have a clear reason to drop it. 
+
+For example:
+- The company name match is wrong (e.g. "Apollo" the Greek god, not Apollo Global Management)
+- The company is barely mentioned — a passing reference in a list, a footnote, or generic background
+- The article has no real content (e.g. a stub, a redirect, or gibberish)
 
 Articles to evaluate:
 

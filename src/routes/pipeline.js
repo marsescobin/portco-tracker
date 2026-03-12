@@ -180,30 +180,23 @@ export async function runPipeline(env) {
 	}, {});
 	console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
 
-	// Step 9: Signal filter — drop articles with no meaningful investor signal
-	const { filtered: withSignal, signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
-	console.log(`[7] SIGNAL     ${withSignal.length} articles passed signal filter (${confirmedWithContent.length - withSignal.length} dropped)`);
-
+	// Step 9: Signal check — observability only, does NOT filter the pipeline
 	// ── SIGNAL MONITORING (START) ──────────────────────────────────────────
+	const { signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
+	console.log(`[7] SIGNAL     check complete — ${signalLog.filter(s => s.signal).length}/${signalLog.length} passed (observability only, not filtering)`);
 	await saveSignalChecks(signalLog, todayISO, env);
 	// ── SIGNAL MONITORING (END) ────────────────────────────────────────────
-
-	if (withSignal.length === 0) {
-		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
-		await saveRun(0, todayISO, totals, bySource, env);
-		return { funnel: totals, results: [] };
-	}
 
 	// Step 10: Fetch any existing digests from earlier runs today so we can merge, not overwrite
 	const existingDigests = await fetchTodaysDigests(todayISO, env);
 
 	// Step 11: LLM summarize by company (merges with existing if present)
-	const results = await summarizeByCompany(withSignal, env.OPENAI_API_KEY, existingDigests);
+	const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY, existingDigests);
 
 	const mergeCount = results.filter(r => existingDigests[r.company]).length;
 	console.log(`[8] SUMMARISE  ${results.length} companies summarised (${mergeCount} merged with existing)`);
 
-	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, withSignal);
+	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
 
 	// Step 12: Save digests to DB (upsert — one row per company per day)
 	if (results.length > 0) {
