@@ -54,8 +54,8 @@ function SkeletonRows() {
 
 export default function Companies() {
   const { data: companies, isLoading, isError } = useCompanies()
-  const [sortKey, setSortKey] = useState<SortKey>('name')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [sortKey, setSortKey] = useState<SortKey>('latest_run_date')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [query, setQuery] = useState('')
 
   const sorted = companies ? sortCompanies(companies, sortKey, sortDir) : companies
