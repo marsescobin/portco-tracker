@@ -45,59 +45,41 @@ async function summarizeCompany(company, companyDescription, articles, apiKey, e
 	const hasExisting = existingSummary.length > 0;
 
 	const prompt = hasExisting
-		? `You are helping a venture capital investor update their daily portfolio digest.
+		? `You are a portfolio analyst at a venture capital firm. You cover ${company} (${companyDescription}).
 
-An earlier run today already produced a digest for this company. New articles have since come in. Your job is to update the digest by merging the new information into the existing bullets.
+An earlier run today produced a digest. New articles have come in — merge the new info into the existing bullets.
 
-## Existing digest (from earlier today)
+## Existing digest
 ${existingSummary.map((b) => `- ${b}`).join('\n')}
 
 ## New articles
 ${articleList}
 
 Rules:
-- Keep existing bullets if they're still accurate and the new articles don't add to them
-- Update a bullet if new articles add a small detail to the exact same story (e.g. two sources covering the same announcement).
-- Add a new bullet if the new articles cover a meaningfully distinct development (e.g. a fundraise is distinct from a product launch, even for the same company)
-- Each bullet covers one distinct story. If it's getting long, split it into sentences rather than cramming everything into one
-- Write how a VC would actually talk about this to a fellow investor — not like a journalist citing sources
-- Only include information directly supported by the articles. Do not infer or speculate
-- Lead with the most newsworthy signal
+- Keep existing bullets if still accurate and new articles don't add to them
+- Update a bullet if new articles add detail to the same story
+- Add a new bullet only for a meaningfully distinct development
+- The company is the implied subject — don't restate their name. Describe other entities in relation to them
+- Only include what the articles explicitly say; don't infer or speculate
 
-Company: ${company}
-What they do: ${companyDescription}
-
-Respond with a JSON object (no markdown, raw JSON only) with these fields:
+Respond with a JSON object (no markdown, raw JSON only):
 - "summary": updated array of bullet strings reflecting the full picture today
-- "sentiment": one of "+", "-", "mixed", or "neutral" — reflecting how all the news (existing + new) makes the company look
-- "sentimentReason": 5 words or fewer (e.g. "raised Series B", "layoffs announced", "regulatory scrutiny")`
+- "sentiment": "+", "-", "mixed", or "neutral" — how all of today's news reflects on the company
+- "sentimentReason": 5 words or fewer (e.g. "raised Series B", "lost market share")`
 
-		: `You are helping a venture capital investor write their daily portfolio digest — a concise update they send to their LPs about what's happening across their portfolio companies.
+		: `You are a portfolio analyst at a venture capital firm. You cover ${company} (${companyDescription}).
 
-You will be given one or more news articles about a specific portfolio company. Your job is to write bullet points — one per genuinely distinct topic.
-Each bullet covers one story and can be multiple sentences if needed — don't sacrifice clarity for brevity, but don't pad either.
-Write like a sharp colleague giving a quick brief — engaging enough to forward to an investor, not dry analyst-speak. Lead with the most newsworthy signal first.
-Only include information that is directly supported by the provided articles. Do not infer, speculate, or add context that isn't explicitly stated in the source material.
-Write how a VC would actually talk about this to a fellow investor — not like a journalist citing sources. 
+You're scanning today's news and writing a quick brief for the investment team. The company is the implied subject — don't restate their name. Other players should be described in relation to them (e.g. "its competitor," "a potential acquirer," "their customer").
 
-Types of signals you can cover:
-- Company voice: what the company or its founders are announcing, building, or saying publicly — product launches, blog posts, podcasts, new hires, partnerships
-- External coverage: what press, analysts, or the public are reporting or saying about them
+Write one bullet per distinct story — 1 to 2 sentences each. Be direct and specific, the way you'd actually brief a partner at the firm. Only include what the articles explicitly say; don't infer or speculate.
 
----
-
-Now summarize the following:
-
-Company: ${company}
-What they do: ${companyDescription}
-
-Recent news articles:
+Recent articles:
 ${articleList}
 
-Respond with a JSON object (no markdown, raw JSON only) with these fields:
-- "summary": array of bullet point strings, one per distinct news topic. Each bullet is 1 sentence. If no meaningful news, return a single bullet saying so.
-- "sentiment": one of "+", "-", "mixed", or "neutral". This should reflect how the news makes the *company* look — does it reflect well on them (+), poorly (-), conflicting (mixed), or neither positive nor negative (neutral)?
-- "sentimentReason": 5 words or fewer describing what's driving the sentiment for the company (e.g. "raised Series B", "layoffs announced", "regulatory scrutiny", "strong earnings + PR crisis").`;
+Respond with a JSON object (no markdown, raw JSON only):
+- "summary": array of bullet strings, one per distinct story. If nothing meaningful, return a single bullet saying so.
+- "sentiment": "+", "-", "mixed", or "neutral" — how this news reflects on the company
+- "sentimentReason": 5 words or fewer (e.g. "raised Series B", "lost market share")`;
 
 	const response = await fetch(OPENAI_API_URL, {
 		method: 'POST',
