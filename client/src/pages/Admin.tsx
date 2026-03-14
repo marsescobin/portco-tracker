@@ -116,7 +116,7 @@ export default function Admin() {
         <>
           {/* Hero stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <StatCard label="Uptime" value={`${healthPct.toFixed(0)}%`} sub={`last ${totalRuns} runs`} />
+            <StatCard label="Clean runs" value={`${healthPct.toFixed(0)}%`} sub={`last ${totalRuns} runs`} />
             <StatCard label="Sources" value={String(sourcesMonitored)} sub="RSS feeds & NewsAPI" />
             <StatCard label="Digests Created" value={String(totalDigests)} sub={`last ${totalRuns} runs`} />
             <StatCard label="Avg Duration" value={formatDuration(avgDuration)} sub="per run" />
