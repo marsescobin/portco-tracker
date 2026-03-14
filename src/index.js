@@ -1,10 +1,11 @@
 import { fetchNews, runPipeline } from './routes/pipeline.js';
 import { submitArticle } from './routes/submit.js';
+import { discoverSource, createSource, updateSource, deleteSource } from './routes/sources.js';
 
 const headers = {
 	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+	'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+	'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
 	'Content-Type': 'application/json',
 };
 
@@ -39,6 +40,29 @@ export default {
 		// Manually submit a URL + company — fetches content, summarizes, saves to DB
 		if (path === '/api/submit-article' && request.method === 'POST') {
 			return submitArticle(request, headers, env);
+		}
+
+		// Route: POST /api/sources/discover
+		// Auto-discover RSS/Atom feed for a given URL
+		if (path === '/api/sources/discover' && request.method === 'POST') {
+			return discoverSource(request, headers, env);
+		}
+
+		// Route: POST /api/sources — create a new source
+		if (path === '/api/sources' && request.method === 'POST') {
+			return createSource(request, headers, env);
+		}
+
+		// Route: PUT /api/sources/:id — update a source
+		const putMatch = path.match(/^\/api\/sources\/([a-f0-9-]+)$/);
+		if (putMatch && request.method === 'PUT') {
+			return updateSource(request, headers, env, putMatch[1]);
+		}
+
+		// Route: DELETE /api/sources/:id — delete a source
+		const deleteMatch = path.match(/^\/api\/sources\/([a-f0-9-]+)$/);
+		if (deleteMatch && request.method === 'DELETE') {
+			return deleteSource(request, headers, env, deleteMatch[1]);
 		}
 
 		// Route: /api/test-firecrawl?url=<encoded-url>

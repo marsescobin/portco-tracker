@@ -10,6 +10,10 @@ import { filterBySignal } from '../utils/news-relevance.js';
 import { createPipelineLog } from '../utils/pipeline-log.js';
 import { fetchNewsSources } from '../services/sources.js';
 
+const FEED_FETCH_OPTIONS = {
+	headers: { 'user-agent': 'initialized-portfolio-tracker/1.0 (RSS feed reader)' },
+};
+
 /**
  * Derives the full pipeline funnel from intermediate arrays.
  * No tracking code lives in the pipeline itself — just pass the arrays in at the end.
@@ -70,7 +74,7 @@ export async function runPipeline(env) {
 
 		// Step 2: Fetch RSS feeds and NewsAPI in parallel
 		const [feedResults, newsApiArticles] = await Promise.all([
-			Promise.allSettled(rssFeeds.map((feed) => extract(feed.url))),
+			Promise.allSettled(rssFeeds.map((feed) => extract(feed.url, {}, FEED_FETCH_OPTIONS))),
 			fetchFromNewsAPI(env.NEWS_API_KEY, todayISO, newsApiDomains, {}, log),
 		]);
 
