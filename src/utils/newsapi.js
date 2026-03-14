@@ -3,23 +3,6 @@ import companies from '../../companies.json' with { type: 'json' };
 const BATCH_SIZE = 10; // companies per request — keeps query string manageable
 const PAGE_SIZE = 100; // max results per request on free tier
 
-// Restrict to trusted tech/startup publications to reduce noise
-// Note: venturebeat, theverge, forbes, businessinsider, crunchbase are already covered by RSS feeds
-const DOMAINS = [
-	'wired.com',
-	'arstechnica.com',
-	'fortune.com',
-	'inc.com',
-	'axios.com',
-	'businesswire.com',
-	'reuters.com',
-	'bloomberg.com',
-	'prnewswire.com',
-	'globenewswire.com',
-	'apnews.com',
-	'wsj.com',
-].join(',');
-
 function chunk(arr, n) {
 	const chunks = [];
 	for (let i = 0; i < arr.length; i += n) {
@@ -34,11 +17,18 @@ function chunk(arr, n) {
  *
  * @param {string} apiKey - NewsAPI key
  * @param {string} [from] - Optional ISO date string to filter articles (e.g. today's date)
+ * @param {string[]} domains - Array of domain strings from init_news_sources (e.g. ['wired.com', 'reuters.com'])
  * @param {{ maxBatches?: number }} [options]
  * @returns {Promise<Array<{ title, description, link, published, source }>>}
  */
-export async function fetchFromNewsAPI(apiKey, from, options = {}) {
+export async function fetchFromNewsAPI(apiKey, from, domains = [], options = {}, log) {
 	if (!apiKey) return [];
+	if (domains.length === 0) {
+		if (log) log.warn('fetch', 'NewsAPI skipped — no domains configured');
+		return [];
+	}
+
+	const domainsStr = domains.join(',');
 
 	const allCompanies = companies.initialized_capital_companies;
 	const batches = chunk(allCompanies, BATCH_SIZE).slice(0, options.maxBatches ?? Infinity);
@@ -50,7 +40,7 @@ export async function fetchFromNewsAPI(apiKey, from, options = {}) {
 
 		const params = new URLSearchParams({
 			q: query,
-			domains: DOMAINS,
+			domains: domainsStr,
 			pageSize: PAGE_SIZE,
 			sortBy: 'publishedAt',
 			apiKey,
@@ -66,7 +56,8 @@ export async function fetchFromNewsAPI(apiKey, from, options = {}) {
 			const data = await res.json();
 
 			if (data.status !== 'ok') {
-				console.warn(`⚠️ NewsAPI batch ${i + 1} error: ${data.message}`);
+				if (log) log.warn('fetch', `NewsAPI batch ${i + 1} error: ${data.message}`, { batch: i + 1, error: data.message });
+				else console.warn(`⚠️ NewsAPI batch ${i + 1} error: ${data.message}`);
 				continue;
 			}
 
@@ -80,7 +71,8 @@ export async function fetchFromNewsAPI(apiKey, from, options = {}) {
 
 			allArticles.push(...articles);
 		} catch (err) {
-			console.warn(`⚠️ NewsAPI batch ${i + 1} failed: ${err.message}`);
+			if (log) log.warn('fetch', `NewsAPI batch ${i + 1} failed: ${err.message}`, { batch: i + 1, error: err.message });
+			else console.warn(`⚠️ NewsAPI batch ${i + 1} failed: ${err.message}`);
 		}
 
 		// Respect free tier rate limit (1 req/sec)

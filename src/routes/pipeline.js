@@ -7,50 +7,8 @@ import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
 import { saveDigests, saveRun, fetchTodaysDigests, saveSignalChecks } from '../services/save.js';
 import { filterBySignal } from '../utils/news-relevance.js';
-
-const RSS_FEEDS = [
-	// Tech News
-	{ name: 'VentureBeat', url: 'http://venturebeat.com/feed/' },
-	{ name: 'The Verge', url: 'http://www.theverge.com/rss/full.xml' },
-	{ name: 'Engadget', url: 'http://www.engadget.com/rss-full.xml' },
-	{ name: 'Tech in Asia', url: 'https://feeds2.feedburner.com/PennOlson' },
-	{ name: 'TechCrunch', url: 'https://techcrunch.com/feed/' },
-	{ name: 'Fast Company', url: 'http://feeds.feedburner.com/fastcompany/headlines' },
-	{ name: 'CNBC Tech', url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
-	{ name: 'CNBC Startups', url: 'https://www.cnbc.com/id/20910258/device/rss/rss.html' },
-	{ name: 'MIT Technology Review', url: 'https://www.technologyreview.com/feed/' },
-	{ name: 'Wired AI', url: 'https://www.wired.com/feed/tag/tech/latest/rss' },
-	{ name: 'CNBC Technology', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910' },
-
-	// Products & Ideas
-	{ name: 'Product Hunt', url: 'http://www.producthunt.com/feed' },
-	{ name: 'Hacker News: Show HN', url: 'http://hnrss.org/show' },
-	{ name: 'Hacker News: Launches', url: 'https://hnrss.org/launches' },
-	// Business
-	{ name: 'Forbes', url: 'https://www.forbes.com/business/feed/' },
-	{ name: 'Business Insider', url: 'https://feeds.businessinsider.com/custom/all' },
-	{ name: 'Crunchbase News', url: 'https://news.crunchbase.com/feed/' },
-	{ name: 'Yahoo Finance', url: 'https://news.yahoo.com/rss/finance' },
-	{ name: 'Wired Business', url: 'https://www.wired.com/feed/tag/ai/latest/rss' },
-	{ name: 'CNBC Finance', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664' },
-	{ name: 'CNBC Business', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147' },
-	{ name: 'Yahoo Tech', url: 'https://news.yahoo.com/rss/tech' },
-
-	// Crypto
-	{ name: 'CoinDesk', url: 'https://www.coindesk.com/arc/outboundfeeds/rss/' },
-	{ name: 'Decrypt', url: 'https://decrypt.co/feed' },
-	{ name: 'The Block', url: 'https://www.theblock.co/rss.xml' },
-	// Health / Biotech
-	{ name: 'STAT News', url: 'https://www.statnews.com/feed/' },
-	{ name: 'Fierce Biotech', url: 'https://www.fiercebiotech.com/rss/xml' },
-	{ name: 'MedCity News', url: 'https://medcitynews.com/feed/' },
-	// Space / Defense
-	{ name: 'Space News', url: 'https://spacenews.com/feed/' },
-	{ name: 'TechCrunch Space', url: 'https://techcrunch.com/category/space/feed/' },
-	// Fintech
-	{ name: 'Finextra', url: 'https://www.finextra.com/rss/headlines.aspx' },
-	{ name: 'PYMNTS', url: 'https://www.pymnts.com/feed/' },
-];
+import { createPipelineLog } from '../utils/pipeline-log.js';
+import { fetchNewsSources } from '../services/sources.js';
 
 /**
  * Derives the full pipeline funnel from intermediate arrays.
@@ -60,11 +18,15 @@ function buildFunnel(allArticles, recentArticles, unseenArticles, candidates, co
 	const bySource = {};
 
 	function get(src) {
-		if (!bySource[src]) bySource[src] = { extracted: 0, dateFiltered: 0, deduped: 0, matched: 0, confirmed: 0, content: { rssContent: 0, readability: 0, firecrawl: 0, rssDescription: 0 } };
+		if (!bySource[src]) bySource[src] = { url: null, extracted: 0, dateFiltered: 0, deduped: 0, matched: 0, confirmed: 0, content: { rssContent: 0, readability: 0, firecrawl: 0, rssDescription: 0 } };
 		return bySource[src];
 	}
 
-	for (const a of allArticles) get(a._source).extracted++;
+	for (const a of allArticles) {
+		const entry = get(a._source);
+		entry.extracted++;
+		if (a._sourceUrl && !entry.url) entry.url = a._sourceUrl;
+	}
 	for (const a of recentArticles) get(a._source).dateFiltered++;
 	for (const a of unseenArticles) get(a._source).deduped++;
 	for (const { article } of candidates) get(article._source).matched++;
@@ -92,123 +54,154 @@ function buildFunnel(allArticles, recentArticles, unseenArticles, candidates, co
 
 /**
  * Core pipeline logic. Fetches, filters, matches, summarises, and saves digests.
- * Returns { funnel, results } — throws on fatal error.
+ * Returns { funnel, results }.
+ *
+ * Fatal errors are caught, logged to the structured event log, and persisted
+ * to init_pipeline_runs with status 'failed' before re-throwing.
  */
 export async function runPipeline(env) {
-	// Step 1: Compute today's date in PST (used for date filter + NewsAPI `from` param)
+	const log = createPipelineLog();
 	const todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }); // e.g. "2026-03-08"
 
-	// Step 2: Fetch RSS feeds and NewsAPI in parallel
-	const [feedResults, newsApiArticles] = await Promise.all([
-		Promise.allSettled(RSS_FEEDS.map((feed) => extract(feed.url))),
-		fetchFromNewsAPI(env.NEWS_API_KEY, todayISO),
-	]);
+	try {
+		// Step 1: Fetch configured sources from DB
+		const { rssFeeds, newsApiDomains } = await fetchNewsSources(env);
+		log.info('sources', `Loaded ${rssFeeds.length} RSS feeds and ${newsApiDomains.length} NewsAPI domains from DB`);
 
-	// Tag each RSS article with its source feed name
-	const rssArticles = feedResults.flatMap((result, i) => {
-		if (result.status !== 'fulfilled') return [];
-		return (result.value.entries ?? []).map((entry) => ({
-			...entry,
-			_source: RSS_FEEDS[i].name,
+		// Step 2: Fetch RSS feeds and NewsAPI in parallel
+		const [feedResults, newsApiArticles] = await Promise.all([
+			Promise.allSettled(rssFeeds.map((feed) => extract(feed.url))),
+			fetchFromNewsAPI(env.NEWS_API_KEY, todayISO, newsApiDomains, {}, log),
+		]);
+
+		// Tag each RSS article with its source feed name — log failures
+		const rssArticles = feedResults.flatMap((result, i) => {
+			if (result.status !== 'fulfilled') {
+			log.warn('fetch', `RSS feed failed: ${rssFeeds[i].name}`, {
+				source: rssFeeds[i].name,
+				url: rssFeeds[i].url,
+				error: String(result.reason),
+			});
+				return [];
+			}
+			return (result.value.entries ?? []).map((entry) => ({
+				...entry,
+				_source: rssFeeds[i].name,
+				_sourceUrl: rssFeeds[i].url,
+			}));
+		});
+
+		// Tag NewsAPI articles with their publication name
+		const taggedNewsApiArticles = newsApiArticles.map((a) => ({
+			...a,
+			_source: a.source || 'NewsAPI',
 		}));
-	});
 
-	// Tag NewsAPI articles with their publication name
-	const taggedNewsApiArticles = newsApiArticles.map((a) => ({
-		...a,
-		_source: a.source || 'NewsAPI',
-	}));
+		const allArticles = [...rssArticles, ...taggedNewsApiArticles];
+		log.info('fetch', `${allArticles.length} articles (RSS: ${rssArticles.length}, NewsAPI: ${taggedNewsApiArticles.length})`);
 
-	const allArticles = [...rssArticles, ...taggedNewsApiArticles];
-	console.log(`[1] FETCH      RSS: ${rssArticles.length} articles | NewsAPI: ${taggedNewsApiArticles.length} articles | Total: ${allArticles.length}`);
+		// Step 3: Filter to articles published today (PST)
+		const todayStartUTC = new Date(todayISO + 'T00:00:00-08:00'); // midnight PST, safe on any machine
+		const recentArticles = allArticles.filter((article) => {
+			if (!article.published) return true; // no date = pass through
+			return new Date(article.published) >= todayStartUTC;
+		});
 
-	// Step 3: Filter to articles published today (PST)
-	const todayStartUTC = new Date(todayISO + 'T00:00:00-08:00'); // midnight PST, safe on any machine
-	const recentArticles = allArticles.filter((article) => {
-		if (!article.published) return true; // no date = pass through
-		return new Date(article.published) >= todayStartUTC;
-	});
+		log.info('dateFilter', `${recentArticles.length} passed (${allArticles.length - recentArticles.length} dropped — not today)`);
 
-	console.log(`[2] DATE FILTER ${recentArticles.length} passed (${allArticles.length - recentArticles.length} dropped — not today)`);
+		// Step 4: Filter out already-seen articles
+		const unseenArticles = await filterUnseenArticles(recentArticles, env);
 
-	// Step 4: Filter out already-seen articles
-	const unseenArticles = await filterUnseenArticles(recentArticles, env);
+		log.info('dedup', `${unseenArticles.length} unseen (${recentArticles.length - unseenArticles.length} already seen — skipped)`);
 
-	console.log(`[3] DEDUP      ${unseenArticles.length} unseen (${recentArticles.length - unseenArticles.length} already seen — skipped)`);
+		// Step 5: Match portfolio company names against unseen articles
+		const candidates = matchCompanies(unseenArticles);
 
-	// Step 5: Match portfolio company names against unseen articles
-	const candidates = matchCompanies(unseenArticles);
+		const uniqueMatchedArticles = new Set(candidates.map((c) => c.article.link)).size;
+		log.info('match', `${uniqueMatchedArticles} unique articles matched (${candidates.length} total company hits)`);
 
-	const uniqueMatchedArticles = new Set(candidates.map((c) => c.article.link)).size;
-	console.log(`[4] MATCH      ${uniqueMatchedArticles} unique articles matched (${candidates.length} total company hits across those articles)`);
+		if (candidates.length === 0) {
+			const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []);
+			const health = log.finalize();
+			await saveRun(0, todayISO, totals, bySource, env, health);
+			return { funnel: totals, results: [] };
+		}
 
-	if (candidates.length === 0) {
-		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, [], []);
-		await saveRun(0, todayISO, totals, bySource, env);
-		return { funnel: totals, results: [] };
+		// Step 6: LLM relevance filter
+		const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY, log);
+
+		const uniqueConfirmedArticles = new Set(confirmed.map((c) => c.article.link)).size;
+		log.info('llmFilter', `${uniqueConfirmedArticles} confirmed relevant (${candidates.length - confirmed.length} rejected)`);
+
+		// Step 7: Mark all unseen articles as seen (regardless of LLM outcome)
+		await markArticlesSeen(unseenArticles, env);
+
+		if (confirmed.length === 0) {
+			const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
+			const health = log.finalize();
+			await saveRun(0, todayISO, totals, bySource, env, health);
+			return { funnel: totals, results: [] };
+		}
+
+		// Step 8: Fetch full content — attach _contentMethod to each article for funnel tracking
+		const confirmedWithContent = await Promise.all(
+			confirmed.map(async (candidate) => {
+				const { content, method } = await fetchArticleContent(candidate.article, env.FIRECRAWL_API_KEY, log);
+				return {
+					...candidate,
+					article: { ...candidate.article, content, _contentMethod: method, _origin: 'pipeline' },
+				};
+			})
+		);
+
+		const methodCounts = confirmedWithContent.reduce((acc, { article }) => {
+			if (article._contentMethod) acc[article._contentMethod] = (acc[article._contentMethod] || 0) + 1;
+			return acc;
+		}, {});
+		log.info('content', `${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`, methodCounts);
+
+		// Step 9: Signal check — observability only, does NOT filter the pipeline
+		// ── SIGNAL MONITORING (START) ──────────────────────────────────────────
+		const { signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY, log);
+		log.info('signal', `check complete — ${signalLog.filter(s => s.signal).length}/${signalLog.length} passed (observability only, not filtering)`);
+		await saveSignalChecks(signalLog, todayISO, env);
+		// ── SIGNAL MONITORING (END) ────────────────────────────────────────────
+
+		// Step 10: Fetch any existing digests from earlier runs today so we can merge, not overwrite
+		const existingDigests = await fetchTodaysDigests(todayISO, env);
+
+		// Step 11: LLM summarize by company (merges with existing if present)
+		const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY, existingDigests, log);
+
+		const mergeCount = results.filter(r => existingDigests[r.company]).length;
+		log.info('summarize', `${results.length} companies summarised (${mergeCount} merged with existing)`);
+
+		const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
+
+		// Step 12: Save digests to DB (upsert — one row per company per day)
+		if (results.length > 0) {
+			await saveDigests(results, todayISO, funnel.totals, env);
+			log.info('save', `${results.length} digests saved to init_news_digests`);
+		}
+
+		// Always record the run so the UI can show "last checked at"
+		const health = log.finalize();
+		await saveRun(results.length, todayISO, funnel.totals, funnel.bySource, env, health);
+
+		return { funnel: funnel.totals, results };
+
+	} catch (err) {
+		// Log the fatal error, then try to persist the run so the dashboard shows it
+		log.error('pipeline', `Fatal error: ${err.message ?? String(err)}`, { error: String(err) });
+		try {
+			const health = log.finalize();
+			await saveRun(0, todayISO, null, null, env, health);
+		} catch {
+			// If even saving the run fails, there's nothing more we can do — console is last resort
+			console.error('[PIPELINE] Could not save failed run to DB:', String(err));
+		}
+		throw err;
 	}
-
-	// Step 6: LLM relevance filter
-	const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY);
-
-	const uniqueConfirmedArticles = new Set(confirmed.map((c) => c.article.link)).size;
-	console.log(`[5] LLM FILTER ${uniqueConfirmedArticles} confirmed relevant (${candidates.length - confirmed.length} rejected)`);
-
-	// Step 7: Mark all unseen articles as seen (regardless of LLM outcome)
-	await markArticlesSeen(unseenArticles, env);
-
-	if (confirmed.length === 0) {
-		const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
-		await saveRun(0, todayISO, totals, bySource, env);
-		return { funnel: totals, results: [] };
-	}
-
-	// Step 8: Fetch full content — attach _contentMethod to each article for funnel tracking
-	const confirmedWithContent = await Promise.all(
-		confirmed.map(async (candidate) => {
-			const { content, method } = await fetchArticleContent(candidate.article, env.FIRECRAWL_API_KEY);
-			return {
-				...candidate,
-				article: { ...candidate.article, content, _contentMethod: method, _origin: 'pipeline' },
-			};
-		})
-	);
-
-	const methodCounts = confirmedWithContent.reduce((acc, { article }) => {
-		if (article._contentMethod) acc[article._contentMethod] = (acc[article._contentMethod] || 0) + 1;
-		return acc;
-	}, {});
-	console.log(`[6] CONTENT    ${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`);
-
-	// Step 9: Signal check — observability only, does NOT filter the pipeline
-	// ── SIGNAL MONITORING (START) ──────────────────────────────────────────
-	const { signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY);
-	console.log(`[7] SIGNAL     check complete — ${signalLog.filter(s => s.signal).length}/${signalLog.length} passed (observability only, not filtering)`);
-	await saveSignalChecks(signalLog, todayISO, env);
-	// ── SIGNAL MONITORING (END) ────────────────────────────────────────────
-
-	// Step 10: Fetch any existing digests from earlier runs today so we can merge, not overwrite
-	const existingDigests = await fetchTodaysDigests(todayISO, env);
-
-	// Step 11: LLM summarize by company (merges with existing if present)
-	const results = await summarizeByCompany(confirmedWithContent, env.OPENAI_API_KEY, existingDigests);
-
-	const mergeCount = results.filter(r => existingDigests[r.company]).length;
-	console.log(`[8] SUMMARISE  ${results.length} companies summarised (${mergeCount} merged with existing)`);
-
-	const funnel = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, confirmedWithContent);
-
-	// Step 12: Save digests to DB (upsert — one row per company per day)
-	if (results.length > 0) {
-		await saveDigests(results, todayISO, funnel.totals, env);
-		console.log(`[9] SAVED      ${results.length} digests to init_news_digests`);
-	}
-
-	// Always record the run so the UI can show "last checked at"
-	await saveRun(results.length, todayISO, funnel.totals, funnel.bySource, env);
-	console.log(`[DONE]         Funnel totals: ${JSON.stringify(funnel.totals)}`);
-
-	return { funnel: funnel.totals, results };
 }
 
 /**

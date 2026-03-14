@@ -8,7 +8,7 @@ const MODEL = 'gpt-5-mini';
  * @param {string} apiKey - OpenAI API key
  * @returns {Promise<Array<{ company: string, summary: string[], sentiment: string, sentimentReason: string, articles: Array<{ title, link }> }>>}
  */
-export async function summarizeByCompany(confirmed, apiKey, existingDigests = {}) {
+export async function summarizeByCompany(confirmed, apiKey, existingDigests = {}, log) {
 	if (confirmed.length === 0) return [];
 
 	// Group articles by company
@@ -23,14 +23,14 @@ export async function summarizeByCompany(confirmed, apiKey, existingDigests = {}
 	// Generate one summary per company in parallel
 	const results = await Promise.all(
 		Object.entries(grouped).map(([company, { companyDescription, articles }]) =>
-			summarizeCompany(company, companyDescription, articles, apiKey, existingDigests[company] ?? null)
+			summarizeCompany(company, companyDescription, articles, apiKey, existingDigests[company] ?? null, log)
 		)
 	);
 
 	return results;
 }
 
-async function summarizeCompany(company, companyDescription, articles, apiKey, existingDigest = null) {
+async function summarizeCompany(company, companyDescription, articles, apiKey, existingDigest = null, log) {
 	const articleList = articles
 		.map((a, i) => [
 			`[${i + 1}] ${a.title ?? '(no title)'}`,
@@ -131,7 +131,8 @@ Respond with a JSON object (no markdown, raw JSON only):
 		sentiment = parsed.sentiment ?? sentiment;
 		sentimentReason = parsed.sentimentReason ?? sentimentReason;
 	} catch {
-		console.warn(`⚠️ Failed to parse summarize response for ${company}:`, raw);
+		if (log) log.warn('summarize', `Failed to parse summarize response for ${company}`, { company, raw: raw.slice(0, 500) });
+		else console.warn(`⚠️ Failed to parse summarize response for ${company}:`, raw);
 	}
 
 	// Merge new articles with any existing ones from earlier runs today (dedup by link)

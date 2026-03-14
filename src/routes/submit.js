@@ -1,6 +1,5 @@
 import companies from '../../companies.json' with { type: 'json' };
 import { fetchArticleContent } from '../utils/fetchContent.js';
-import { filterCandidates } from '../utils/filter.js';
 import { summarizeByCompany } from '../utils/summarize.js';
 import { saveDigests, fetchTodaysDigests } from '../services/save.js';
 
@@ -47,29 +46,7 @@ export async function submitArticle(request, headers, env) {
 			return new Response(JSON.stringify({ error: 'Could not extract any content from this URL' }), { status: 422, headers });
 		}
 
-		// ── Relevance check (same LLM filter the pipeline uses) ────────
-		const candidatesForFilter = [
-			{
-				company: match.name,
-				companyDescription: match.description ?? '',
-				article: {
-					title: '(manual submission)',
-					description: content.slice(0, 1000),
-					link: url,
-				},
-			},
-		];
-
-		const confirmed = await filterCandidates(candidatesForFilter, env.OPENAI_API_KEY);
-
-		if (confirmed.length === 0) {
-			return new Response(JSON.stringify({
-				error: 'Article not relevant',
-				message: `This URL does not appear to contain news about ${match.name}.`,
-			}), { status: 422, headers });
-		}
-
-		// ── Build candidate for summarization ───────────────────────────
+		// ── Build candidate (same shape the pipeline produces) ──────────
 		const candidates = [
 			{
 				company: match.name,

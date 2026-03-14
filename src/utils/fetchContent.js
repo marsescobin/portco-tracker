@@ -13,7 +13,7 @@ const MIN_CONTENT_LENGTH = 200;
  * @param {string} [firecrawlApiKey] - Optional Firecrawl API key
  * @returns {Promise<{ content: string, method: 'rssContent' | 'readability' | 'firecrawl' | 'fallback' }>}
  */
-export async function fetchArticleContent(article, firecrawlApiKey) {
+export async function fetchArticleContent(article, firecrawlApiKey, log) {
 	const { link, description, content } = article;
 
 	// Step 1: RSS content is already substantial
@@ -23,12 +23,12 @@ export async function fetchArticleContent(article, firecrawlApiKey) {
 
 	// Step 2: Try passToReadability
 	try {
-		const result = await passToReadability(link);
+		const result = await passToReadability(link, log);
 		if (result?.textContent && result.textContent.length > MIN_CONTENT_LENGTH) {
 			return { content: result.textContent, method: 'readability' };
 		}
-	} catch {
-		// Readability failed — continue to next fallback
+	} catch (err) {
+		if (log) log.warn('content', `Readability threw for ${link}: ${err.message}`, { url: link, error: err.message });
 	}
 
 	// Step 3: Try Firecrawl summary if API key is available
@@ -53,11 +53,12 @@ export async function fetchArticleContent(article, firecrawlApiKey) {
 				return { content: summary, method: 'firecrawl' };
 			}
 			}
-		} catch {
-			// Firecrawl failed — continue to last resort
+		} catch (err) {
+			if (log) log.warn('content', `Firecrawl failed for ${link}: ${err.message}`, { url: link, error: err.message });
 		}
 	}
 
 	// Step 4: Last resort — use RSS description
+	if (log) log.warn('content', `All methods failed, fell back to RSS description: ${article.title ?? link}`, { url: link });
 	return { content: description ?? '', method: 'rssDescription' };
 }

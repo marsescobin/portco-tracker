@@ -12,14 +12,14 @@ const CANDIDATES_PER_BATCH = 10; // smaller batches — content is much longer t
  * @param {string} apiKey - OpenAI API key
  * @returns {Promise<Array<{ article, company: string, companyDescription: string }>>}
  */
-export async function filterBySignal(candidates, apiKey) {
+export async function filterBySignal(candidates, apiKey, log) {
 	if (candidates.length === 0) return { filtered: [], signalLog: [] };
 
 	const allResults = [];
 
 	for (let i = 0; i < candidates.length; i += CANDIDATES_PER_BATCH) {
 		const batch = candidates.slice(i, i + CANDIDATES_PER_BATCH);
-		const batchResults = await filterSignalBatch(batch, apiKey);
+		const batchResults = await filterSignalBatch(batch, apiKey, log);
 		allResults.push(...batchResults);
 	}
 
@@ -29,7 +29,7 @@ export async function filterBySignal(candidates, apiKey) {
 	};
 }
 
-async function filterSignalBatch(batch, apiKey) {
+async function filterSignalBatch(batch, apiKey, log) {
 	const articleList = batch
 		.map((c, idx) => [
 			`[${idx + 1}] Company: "${c.company}"`,
@@ -104,7 +104,8 @@ ${articleList}`;
 	try {
 		results = JSON.parse(raw).articles ?? [];
 	} catch {
-		console.error('⚠️ Failed to parse news relevance filter response as JSON:', raw);
+		if (log) log.error('signal', `Failed to parse signal filter response as JSON`, { raw: raw.slice(0, 500) });
+		else console.error('⚠️ Failed to parse news relevance filter response as JSON:', raw);
 		return [];
 	}
 

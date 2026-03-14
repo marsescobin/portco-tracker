@@ -48,7 +48,8 @@ export async function fetchTodaysDigests(runDate, env) {
 }
 
 // Records every pipeline run — even if no results — so the UI can show "last checked at".
-export async function saveRun(resultCount, runDate, funnel, bySource, env) {
+// Accepts an optional `health` object with { status, events, duration_ms } from the pipeline logger.
+export async function saveRun(resultCount, runDate, funnel, bySource, env, health = {}) {
 	const response = await fetch(
 		`${env.SUPABASE_URL}/rest/v1/init_pipeline_runs`,
 		{
@@ -60,6 +61,9 @@ export async function saveRun(resultCount, runDate, funnel, bySource, env) {
 				result_count: resultCount,
 				funnel,
 				by_source: bySource,
+				status: health.status ?? 'success',
+				events: health.events ?? [],
+				duration_ms: health.duration_ms ?? null,
 			}),
 		}
 	);

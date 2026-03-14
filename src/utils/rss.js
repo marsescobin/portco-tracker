@@ -15,7 +15,7 @@ export async function testFeed(rssUrl) {
 	return data;
 }
 
-export async function passToReadability(articleUrl) {
+export async function passToReadability(articleUrl, log) {
 	try {
 		const response = await fetch(articleUrl);
 		const html = await response.text();
@@ -24,7 +24,8 @@ export async function passToReadability(articleUrl) {
 		const article = reader.parse();
 		return article;
 	} catch (error) {
-		console.log('❌ Mozilla Readability error:', error.message);
+		if (log) log.warn('content', `Readability failed: ${articleUrl}`, { url: articleUrl, error: error.message });
+		else console.log('❌ Mozilla Readability error:', error.message);
 		return null;
 	}
 }

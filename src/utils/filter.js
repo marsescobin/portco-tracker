@@ -9,7 +9,7 @@ const CANDIDATES_PER_BATCH = 20; // keep prompts manageable
  * @param {string} apiKey - OpenAI API key
  * @returns {Promise<Array<{ article, company: string, companyDescription: string }>>} confirmed candidates
  */
-export async function filterCandidates(candidates, apiKey) {
+export async function filterCandidates(candidates, apiKey, log) {
 	if (candidates.length === 0) return [];
 
 	const confirmed = [];
@@ -17,14 +17,14 @@ export async function filterCandidates(candidates, apiKey) {
 	// Process in batches to avoid token limits
 	for (let i = 0; i < candidates.length; i += CANDIDATES_PER_BATCH) {
 		const batch = candidates.slice(i, i + CANDIDATES_PER_BATCH);
-		const batchConfirmed = await filterBatch(batch, apiKey);
+		const batchConfirmed = await filterBatch(batch, apiKey, log);
 		confirmed.push(...batchConfirmed);
 	}
 
 	return confirmed;
 }
 
-async function filterBatch(batch, apiKey) {
+async function filterBatch(batch, apiKey, log) {
 	const articleList = batch
 		.map((c, idx) => [
 			`[${idx + 1}] Company: "${c.company}"`,
@@ -73,7 +73,8 @@ ${articleList}`;
 	try {
 		results = JSON.parse(content);
 	} catch {
-		console.error('⚠️ Failed to parse LLM response as JSON:', content);
+		if (log) log.error('llmFilter', `Failed to parse LLM response as JSON`, { raw: content.slice(0, 500) });
+		else console.error('⚠️ Failed to parse LLM response as JSON:', content);
 		return [];
 	}
 
