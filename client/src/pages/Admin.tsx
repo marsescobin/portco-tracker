@@ -11,10 +11,22 @@ import { useNewsSources } from '@/hooks/useNewsSources'
 type Tab = 'health' | 'sources'
 
 const COMING_SOON = [
+ 
   {
     icon: SlidersHorizontal,
+    title: 'Monitor company newsrooms',
+    description: 'Monitor company newsrooms to get the latest releases and announcements.',
+  },
+   {
+    icon: SlidersHorizontal,
+    title: 'Monitor company Twitter/X accounts',
+    description: 'Monitor company Twitter/X accounts to get the latest announcements.',
+  },
+  {
+    
+    icon: SlidersHorizontal,
     title: 'Prompt Editor',
-    description: 'Control what gets surfaced and how it reads, without touching code.',
+    description: 'Easily edit instructions for the summarizer.',
   },
 ]
 
