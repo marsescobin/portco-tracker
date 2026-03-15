@@ -23,9 +23,8 @@ const COMING_SOON = [
     description: 'Monitor company Twitter/X accounts to get the latest announcements.',
   },
   {
-    
     icon: SlidersHorizontal,
-    title: 'Prompt Editor',
+    title: 'Edit the summarizer prompt',
     description: 'Easily edit instructions for the summarizer.',
   },
 ]

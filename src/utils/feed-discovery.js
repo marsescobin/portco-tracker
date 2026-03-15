@@ -51,10 +51,7 @@ export async function discoverFeed(inputUrl) {
 
 	// Step 2: Fetch the page and look for <link rel="alternate"> tags
 	try {
-		const res = await fetch(url, {
-			headers: { 'User-Agent': 'initialized-portfolio-tracker/1.0' },
-			redirect: 'follow',
-		});
+		const res = await fetch(url, { redirect: 'follow' });
 		if (!res.ok) return [];
 
 		const contentType = res.headers.get('content-type') || '';
@@ -134,10 +131,7 @@ export async function discoverFeed(inputUrl) {
  */
 async function checkIfFeed(url) {
 	try {
-		const res = await fetch(url, {
-			headers: { 'User-Agent': 'initialized-portfolio-tracker/1.0' },
-			redirect: 'follow',
-		});
+		const res = await fetch(url, { redirect: 'follow' });
 		if (!res.ok) return null;
 
 		// Always try parsing — Content-Type is just a hint, not a guarantee

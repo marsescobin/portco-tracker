@@ -68,7 +68,7 @@ export function PipelineHealthBar({ runs, selectedRunId, onSelectRun }: Pipeline
         </div>
 
         {/* Bar — one cell per run, oldest on the left */}
-        <div className="flex gap-[2px] h-9">
+        <div className="flex gap-[2px] h-9 overflow-hidden">
           {chronological.map((run) => {
             const isSelected = run.id === selectedRunId
             const color = STATUS_COLORS[run.status] ?? 'bg-muted'
@@ -83,7 +83,7 @@ export function PipelineHealthBar({ runs, selectedRunId, onSelectRun }: Pipeline
                 }}
                 onMouseLeave={() => setTooltip(null)}
                 className={cn(
-                  'flex-1 rounded-sm transition-all cursor-pointer min-w-[4px]',
+                  'flex-1 rounded-sm transition-all cursor-pointer min-w-0',
                   color,
                   isSelected
                     ? 'ring-2 ring-foreground ring-offset-1 ring-offset-background'
