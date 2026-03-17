@@ -59,7 +59,7 @@ export function PipelineHealthBar({ runs, selectedRunId, onSelectRun }: Pipeline
               'text-sm font-semibold tabular-nums',
               healthPct >= 90 ? 'text-emerald-600' : healthPct >= 70 ? 'text-amber-600' : 'text-red-600'
             )}>
-              {healthPct.toFixed(0)}% healthy
+              {healthPct.toFixed(0)}% clean runs
             </span>
           </div>
           <span className="text-xs text-muted-foreground">

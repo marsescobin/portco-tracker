@@ -17,14 +17,14 @@ const COMING_SOON = [
   {
     icon: SlidersHorizontal,
     title: 'Monitor company newsrooms',
-    description: 'Monitor company newsrooms to get the latest releases and announcements.',
+    description: 'Monitor company websites for official news and announcements.',
   },
    {
     icon: SlidersHorizontal,
     title: 'Monitor company Twitter/X accounts',
-    description: 'Monitor company Twitter/X accounts to get the latest announcements.',
+    description: 'Monitor company Twitter/X for mentions and announcements.',
   },
-  {
+  { 
     icon: SlidersHorizontal,
     title: 'Edit the summarizer prompt',
     description: 'Easily edit instructions for the summarizer.',
