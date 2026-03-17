@@ -5,7 +5,7 @@ import { summarizeByCompany } from '../utils/summarize.js';
 import { filterUnseenArticles, markArticlesSeen } from '../utils/dedup.js';
 import { fetchArticleContent } from '../utils/fetchContent.js';
 import { fetchFromNewsAPI } from '../utils/newsapi.js';
-import { saveDigests, saveRun, fetchTodaysDigests, saveSignalChecks } from '../services/save.js';
+import { saveDigests, saveRun, fetchTodaysDigests, saveArticleChecks } from '../services/save.js';
 import { filterBySignal } from '../utils/news-relevance.js';
 import { createPipelineLog } from '../utils/pipeline-log.js';
 import { fetchNewsSources } from '../services/sources.js';
@@ -129,7 +129,7 @@ export async function runPipeline(env) {
 		}
 
 		// Step 6: LLM relevance filter
-		const confirmed = await filterCandidates(candidates, env.OPENAI_API_KEY, log);
+		const { confirmed, allResults: llmResults } = await filterCandidates(candidates, env.OPENAI_API_KEY, log);
 
 		const uniqueConfirmedArticles = new Set(confirmed.map((c) => c.article.link)).size;
 		log.info('llmFilter', `${uniqueConfirmedArticles} confirmed relevant (${candidates.length - confirmed.length} rejected)`);
@@ -138,6 +138,21 @@ export async function runPipeline(env) {
 		await markArticlesSeen(unseenArticles, env);
 
 		if (confirmed.length === 0) {
+			// Still save keyword + LLM checks even when nothing was confirmed
+			const earlyChecks = [
+				...candidates.map((c) => ({
+					company: c.company, article_url: c.article.link ?? null,
+					article_title: c.article.title ?? null, article_source: c.article._source ?? null,
+					stage: 'keyword_match', passed: true, reason: null,
+				})),
+				...llmResults.map((r) => ({
+					company: r.company, article_url: r.article.link ?? null,
+					article_title: r.article.title ?? null, article_source: r.article._source ?? null,
+					stage: 'llm_filter', passed: r.relevant === true, reason: r.reason ?? null,
+				})),
+			];
+			await saveArticleChecks(earlyChecks, todayISO, env);
+
 			const { totals, bySource } = buildFunnel(allArticles, recentArticles, unseenArticles, candidates, confirmed, []);
 			const health = log.finalize();
 			await saveRun(0, todayISO, totals, bySource, env, health);
@@ -162,11 +177,44 @@ export async function runPipeline(env) {
 		log.info('content', `${confirmedWithContent.length} articles fetched — ${JSON.stringify(methodCounts)}`, methodCounts);
 
 		// Step 9: Signal check — observability only, does NOT filter the pipeline
-		// ── SIGNAL MONITORING (START) ──────────────────────────────────────────
 		const { signalLog } = await filterBySignal(confirmedWithContent, env.OPENAI_API_KEY, log);
 		log.info('signal', `check complete — ${signalLog.filter(s => s.signal).length}/${signalLog.length} passed (observability only, not filtering)`);
-		await saveSignalChecks(signalLog, todayISO, env);
-		// ── SIGNAL MONITORING (END) ────────────────────────────────────────────
+
+		// ── ARTICLE CHECKS — save keyword match + LLM filter + signal results ──
+		const articleChecks = [
+			// Stage 1: keyword matches (all passed by definition — they matched regex)
+			...candidates.map((c) => ({
+				company: c.company,
+				article_url: c.article.link ?? null,
+				article_title: c.article.title ?? null,
+				article_source: c.article._source ?? null,
+				stage: 'keyword_match',
+				passed: true,
+				reason: null,
+			})),
+			// Stage 2: LLM relevance filter (accepted + rejected, with reasons)
+			...llmResults.map((r) => ({
+				company: r.company,
+				article_url: r.article.link ?? null,
+				article_title: r.article.title ?? null,
+				article_source: r.article._source ?? null,
+				stage: 'llm_filter',
+				passed: r.relevant === true,
+				reason: r.reason ?? null,
+			})),
+			// Stage 3: signal filter (pass + drop, with reasons)
+			...signalLog.map((r) => ({
+				company: r.company,
+				article_url: r.article?.link ?? null,
+				article_title: r.article?.title ?? null,
+				article_source: r.article?._source ?? null,
+				stage: 'signal',
+				passed: r.signal === true,
+				reason: r.signalReason ?? null,
+			})),
+		];
+		await saveArticleChecks(articleChecks, todayISO, env);
+		// ── ARTICLE CHECKS (END) ───────────────────────────────────────────────
 
 		// Step 10: Fetch any existing digests from earlier runs today so we can merge, not overwrite
 		const existingDigests = await fetchTodaysDigests(todayISO, env);

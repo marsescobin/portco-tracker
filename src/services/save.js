@@ -76,24 +76,29 @@ export async function saveRun(resultCount, runDate, funnel, bySource, env, healt
 	return response.json();
 }
 
-// ── SIGNAL MONITORING (START) ─────────────────────────────────────────────
-// Saves all signal check results (pass + drop) for post-run inspection.
-// Safe to delete this function and its call in pipeline.js when done.
-export async function saveSignalChecks(signalLog, runDate, env) {
-	if (signalLog.length === 0) return;
+// ── ARTICLE CHECKS ────────────────────────────────────────────────────────
+// Saves per-article pass/fail decisions across pipeline stages so the
+// Admin page can drill into exactly what matched, what the LLM confirmed,
+// and what passed the signal filter — with reasons.
+//
+// stage: 'keyword_match' | 'llm_filter' | 'signal'
+export async function saveArticleChecks(checks, runDate, env) {
+	if (checks.length === 0) return;
 
-	const rows = signalLog.map((r) => ({
+	const rows = checks.map((c) => ({
 		run_date: runDate,
 		run_at: new Date().toISOString(),
-		company: r.company,
-		article_url: r.article?.link ?? null,
-		article_title: r.article?.title ?? null,
-		signal: r.signal,
-		reason: r.signalReason ?? null,
+		company: c.company,
+		article_url: c.article_url,
+		article_title: c.article_title,
+		article_source: c.article_source ?? null,
+		stage: c.stage,
+		passed: c.passed,
+		reason: c.reason ?? null,
 	}));
 
 	const response = await fetch(
-		`${env.SUPABASE_URL}/rest/v1/init_signal_checks`,
+		`${env.SUPABASE_URL}/rest/v1/init_article_checks`,
 		{
 			method: 'POST',
 			headers: supabaseHeaders(env),
@@ -103,10 +108,10 @@ export async function saveSignalChecks(signalLog, runDate, env) {
 
 	if (!response.ok) {
 		const error = await response.text();
-		console.warn(`[SIGNAL MONITORING] saveSignalChecks failed (non-fatal): ${error}`);
+		console.warn(`[ARTICLE CHECKS] saveArticleChecks failed (non-fatal): ${error}`);
 	}
 }
-// ── SIGNAL MONITORING (END) ───────────────────────────────────────────────
+// ── ARTICLE CHECKS (END) ─────────────────────────────────────────────────
 
 // Seeds companies from the local companies.json file.
 // Uses upsert (merge-duplicates) so it's safe to call multiple times.

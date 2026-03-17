@@ -5,8 +5,10 @@ import { usePipelineRuns } from '@/hooks/usePipelineRuns'
 import type { PipelineRun } from '@/hooks/usePipelineRuns'
 import { PipelineHealthBar } from '@/components/pipeline/PipelineHealthBar'
 import { PipelineIssues } from '@/components/pipeline/PipelineIssues'
+import { ArticleChecksPanel } from '@/components/pipeline/ArticleChecksPanel'
 import { SourcesTab } from '@/components/pipeline/SourcesTab'
 import { useNewsSources } from '@/hooks/useNewsSources'
+import { useArticleChecks } from '@/hooks/useArticleChecks'
 
 type Tab = 'health' | 'sources'
 
@@ -66,13 +68,17 @@ function statusLabel(status: string) {
   return 'Failed'
 }
 
+type FunnelStage = 'keyword_match' | 'llm_filter' | 'signal' | null
+
 export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('health')
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null)
+  const [activeStage, setActiveStage] = useState<FunnelStage>(null)
   const { data: runs, isLoading, error } = usePipelineRuns(100)
   const { data: sources } = useNewsSources()
 
   const selectedRun = runs?.find((r) => r.id === selectedRunId) ?? runs?.[0] ?? null
+  const { data: articleChecks, isLoading: checksLoading } = useArticleChecks(selectedRun?.run_date ?? null)
   const latestRun = runs?.[0] ?? null
 
   const successCount = runs?.filter((r) => r.status === 'success').length ?? 0
@@ -144,7 +150,15 @@ export default function Admin() {
           {selectedRun && (
             <div className="space-y-4">
               <RunHeader run={selectedRun} />
-              <FunnelSummary run={selectedRun} />
+              <FunnelSummary run={selectedRun} activeStage={activeStage} onStageClick={setActiveStage} />
+              {activeStage && (
+                <ArticleChecksPanel
+                  stage={activeStage}
+                  checks={articleChecks ?? []}
+                  isLoading={checksLoading}
+                  onClose={() => setActiveStage(null)}
+                />
+              )}
               <PipelineIssues run={selectedRun} />
             </div>
           )}
@@ -270,28 +284,87 @@ function RunHeader({ run }: { run: PipelineRun }) {
   )
 }
 
-/** Compact funnel summary — one row of numbers with arrows */
-function FunnelSummary({ run }: { run: PipelineRun }) {
-  const f = run.funnel as Record<string, number> | null
+const CONTENT_METHOD_LABELS: Record<string, string> = {
+  rssContent: 'Article body',
+  readability: 'Readability',
+  firecrawl: 'Firecrawl',
+  rssDescription: 'Description only',
+}
+
+/** Compact funnel summary — one row of numbers with arrows. Matched / Confirmed are clickable. */
+function FunnelSummary({ run, activeStage, onStageClick }: {
+  run: PipelineRun
+  activeStage: FunnelStage
+  onStageClick: (stage: FunnelStage) => void
+}) {
+  const f = run.funnel as Record<string, unknown> | null
   if (!f) return null
 
-  const steps = [
-    { label: 'Extracted', value: f.extracted },
-    { label: 'Today', value: f.dateFiltered },
-    { label: 'Deduped', value: f.deduped },
-    { label: 'Matched', value: f.matched },
-    { label: 'Confirmed', value: f.confirmed },
+  const steps: { label: string; value: number; stage?: 'keyword_match' | 'llm_filter' | 'signal' }[] = [
+    { label: 'Extracted', value: (f.extracted as number) ?? 0 },
+    { label: 'Today', value: (f.dateFiltered as number) ?? 0 },
+    { label: 'Deduped', value: (f.deduped as number) ?? 0 },
+    { label: 'Matched', value: (f.matched as number) ?? 0, stage: 'keyword_match' },
+    { label: 'Confirmed', value: (f.confirmed as number) ?? 0, stage: 'llm_filter' },
   ]
 
+  const content = f.content as Record<string, number> | undefined
+  const contentEntries = content
+    ? Object.entries(content).filter(([, v]) => v > 0)
+    : []
+
   return (
-    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
-      {steps.map((step, i) => (
-        <span key={step.label} className="inline-flex items-center gap-1.5">
-          {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground/50" />}
-          <span className="tabular-nums font-medium">{step.value ?? 0}</span>
-          <span className="text-muted-foreground text-xs">{step.label}</span>
-        </span>
-      ))}
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
+        {steps.map((step, i) => {
+          const isClickable = !!step.stage
+          const isActive = step.stage === activeStage
+
+          const inner = (
+            <>
+              {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground/50" />}
+              <span className="tabular-nums font-medium">{step.value}</span>
+              <span className="text-muted-foreground text-xs">{step.label}</span>
+            </>
+          )
+
+          if (isClickable) {
+            return (
+              <button
+                key={step.label}
+                onClick={() => onStageClick(isActive ? null : step.stage!)}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-1.5 py-0.5 -mx-1.5 rounded transition-colors',
+                  isActive
+                    ? 'bg-foreground/10 ring-1 ring-foreground/20'
+                    : 'hover:bg-muted cursor-pointer',
+                )}
+              >
+                {inner}
+              </button>
+            )
+          }
+
+          return (
+            <span key={step.label} className="inline-flex items-center gap-1.5">
+              {inner}
+            </span>
+          )
+        })}
+      </div>
+
+      {/* Content method breakdown */}
+      {contentEntries.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/60">Content:</span>
+          {contentEntries.map(([method, count], i) => (
+            <span key={method}>
+              {i > 0 && <span className="mx-0.5">·</span>}
+              {count} {CONTENT_METHOD_LABELS[method] ?? method}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

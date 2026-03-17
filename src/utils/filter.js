@@ -5,23 +5,29 @@ const CANDIDATES_PER_BATCH = 20; // keep prompts manageable
 /**
  * Calls OpenAI to confirm which candidates are genuinely about the matched company.
  *
+ * Returns { confirmed, allResults } where:
+ *   - confirmed: only the candidates the LLM accepted (backwards-compatible)
+ *   - allResults: every candidate with { relevant, reason } attached (for observability)
+ *
  * @param {Array<{ article, company: string, companyDescription: string }>} candidates
  * @param {string} apiKey - OpenAI API key
- * @returns {Promise<Array<{ article, company: string, companyDescription: string }>>} confirmed candidates
+ * @returns {Promise<{ confirmed: Array, allResults: Array }>}
  */
 export async function filterCandidates(candidates, apiKey, log) {
-	if (candidates.length === 0) return [];
+	if (candidates.length === 0) return { confirmed: [], allResults: [] };
 
 	const confirmed = [];
+	const allResults = [];
 
 	// Process in batches to avoid token limits
 	for (let i = 0; i < candidates.length; i += CANDIDATES_PER_BATCH) {
 		const batch = candidates.slice(i, i + CANDIDATES_PER_BATCH);
-		const batchConfirmed = await filterBatch(batch, apiKey, log);
-		confirmed.push(...batchConfirmed);
+		const { accepted, all } = await filterBatch(batch, apiKey, log);
+		confirmed.push(...accepted);
+		allResults.push(...all);
 	}
 
-	return confirmed;
+	return { confirmed, allResults };
 }
 
 async function filterBatch(batch, apiKey, log) {
@@ -75,12 +81,19 @@ ${articleList}`;
 	} catch {
 		if (log) log.error('llmFilter', `Failed to parse LLM response as JSON`, { raw: content.slice(0, 500) });
 		else console.error('⚠️ Failed to parse LLM response as JSON:', content);
-		return [];
+		return { accepted: [], all: [] };
 	}
 
-	// Return only the candidates the LLM confirmed as relevant, with reason attached
-	return results
-		.filter((r) => r.relevant === true)
-		.map((r) => ({ ...batch[r.index - 1], reason: r.reason }))
+	// Build the full list with relevant/reason attached to every candidate
+	const all = results
+		.map((r) => {
+			const candidate = batch[r.index - 1];
+			if (!candidate) return null;
+			return { ...candidate, relevant: r.relevant, reason: r.reason };
+		})
 		.filter(Boolean);
+
+	const accepted = all.filter((r) => r.relevant === true);
+
+	return { accepted, all };
 }
