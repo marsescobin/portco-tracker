@@ -8,18 +8,20 @@ A full-stack portfolio intelligence tool for Initialized Capital. A Cloudflare W
 
 ## How It Works
 
-The pipeline runs in 10 steps when `GET /api/fetch-news` is called (or on the hourly cron trigger):
+The pipeline runs in 12 steps when `GET /api/fetch-news` is called (or on the hourly cron trigger):
 
-1. **Fetch** — Pulls articles in parallel from 30+ RSS feeds (TechCrunch, VentureBeat, Forbes, Crunchbase News, etc.) and NewsAPI, batched by company name
-2. **Date filter** — Keeps only articles published today (PST)
-3. **Dedup** — Skips articles whose URLs have already been stored in Supabase from a prior run
-4. **Match** — Scans headlines and descriptions for portfolio company name or website domain mentions using whole-word regex
-5. **LLM relevance filter** — GPT-5-mini confirms each match is genuinely about that company, using the company description to disambiguate
-6. **Mark seen** — Stores processed article URLs in Supabase so they won't be re-processed in future runs
-7. **Content fetch** — Grabs full article text via a fallback chain: RSS body → Mozilla Readability → Firecrawl → RSS description
-8. **Signal filter** — GPT-5-mini drops articles with no meaningful investor signal (e.g. generic listicles that mention the company in passing)
-9. **Summarize** — GPT-5-mini writes a VC-voice digest per company, merging with any digest already produced earlier today
-10. **Save** — Upserts digests to `init_news_digests` and records pipeline run stats in `init_pipeline_runs`
+1. **Load sources** — Fetches configured RSS feeds and NewsAPI domains from `init_news_sources` in Supabase
+2. **Fetch** — Pulls articles in parallel from all RSS feeds (via `Promise.allSettled`) and NewsAPI (batched by company name). Each article is tagged with its source for funnel tracking
+3. **Date filter** — Keeps only articles published today (PST)
+4. **Dedup** — Skips articles whose normalised URLs have already been stored in Supabase from a prior run. Uses a Supabase RPC function to safely handle URLs with special characters
+5. **Match** — Scans headlines and descriptions for portfolio company name or website domain mentions using whole-word regex
+6. **LLM relevance filter** — GPT-5-mini confirms each match is genuinely about that company, using the company description to disambiguate
+7. **Mark seen** — Stores all processed article URLs in Supabase so they won't be re-processed in future runs (regardless of LLM outcome)
+8. **Content fetch** — Grabs full article text via a fallback chain: RSS body → Mozilla Readability → Firecrawl → RSS description
+9. **Signal check** — GPT-5-mini evaluates whether each article contains meaningful investor signal. Currently runs for observability only (results are logged and saved to `init_article_checks` but do not filter the pipeline)
+10. **Save article checks** — Records per-article pass/fail decisions across all stages (keyword match, LLM filter, signal) with reasons to `init_article_checks`
+11. **Summarize** — GPT-5-mini writes a VC-voice digest per company, merging with any digest already produced earlier today
+12. **Save** — Upserts digests to `init_news_digests` and records pipeline run stats (funnel breakdown, per-source stats, health status, event log) in `init_pipeline_runs`
 
 Each response includes a funnel breakdown showing how many articles passed each stage.
 
@@ -33,7 +35,7 @@ Three pages served at the live URL:
 |---|---|
 | `/companies` | Sortable table of all portfolio companies. Click any row to expand and see the company's full digest history — summaries, sentiment, and source articles |
 | `/daily` | Heatmap calendar showing digest activity across the year. Click any square to see which companies were in the news that day |
-| `/admin` | Roadmap of upcoming features |
+| `/admin` | Pipeline health dashboard (run history, funnel stats, per-article decisions, issues log) and news source management (add, edit, delete, auto-discover feeds). Also shows a roadmap of upcoming features |
 
 ---
 
@@ -42,6 +44,11 @@ Three pages served at the live URL:
 | Endpoint | Description |
 |---|---|
 | `GET /api/fetch-news` | Runs the full news pipeline and saves results to Supabase |
+| `POST /api/submit-article` | Manually submit a URL + company — fetches content, summarizes, and saves to DB |
+| `POST /api/sources/discover` | Auto-discover RSS/Atom feeds for a given URL |
+| `POST /api/sources` | Create a new news source |
+| `PUT /api/sources/:id` | Update an existing news source |
+| `DELETE /api/sources/:id` | Delete a news source |
 | `GET /api/test-firecrawl?url=<url>` | Debug: returns raw Firecrawl response for a given URL |
 
 ---
@@ -52,7 +59,7 @@ Three pages served at the live URL:
 |---|---|
 | Runtime | Cloudflare Workers |
 | Database | Supabase (PostgreSQL) |
-| News sources | 30+ RSS feeds + NewsAPI |
+| News sources | RSS feeds + NewsAPI (sources managed in Supabase) |
 | Content extraction | Mozilla Readability, Firecrawl |
 | AI | OpenAI GPT-5-mini |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS v4 |
@@ -220,4 +227,4 @@ The Initialized portfolio was scraped once and seeded into Supabase. The website
 - **Content storage + embeddings** — this is the one I most wanted to build but didn't have time for. Currently the full article content is fetched, used for summarization, and discarded. The next step would be to persist it, chunk it, and embed it into a vector store (e.g. Supabase pgvector) to enable RAG
 - **Smart search** — once embeddings are in place, natural language search across all past digests and articles becomes straightforward ("which companies raised money this quarter", "what's happening in fintech this week")
 - **Digest delivery** — push the daily digest to Slack or email on a schedule
-- **KV cache for portfolio** — avoid hitting Supabase on every news run by caching the company list in Cloudflare KV
+
